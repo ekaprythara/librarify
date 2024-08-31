@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rules;
 
 class UserController extends Controller
@@ -24,7 +25,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return inertia("Admin/MemberCreate");
     }
 
     /**
@@ -32,7 +33,15 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->hasFile('image')) {
+            // Store the uploaded file and get the path
+            $path = $request->file('image')->store('images/users', 'public');
+        } else {
+            $path = null;
+        }
+
         $data = $request->validate([
+            "image" => "nullable|image|mimes:jpg,jpeg,png|max:2048",
             "username" => "required",
             "password" => ['required', 'confirmed', Rules\Password::defaults()],
             "name" => "required",
@@ -40,10 +49,12 @@ class UserController extends Controller
             "phone_number" => "required",
             "email" => "required",
         ]);
+        $data["image"] = $path;
         $data["role_id"] = 2;
         $data['password'] = bcrypt($data['password']);
 
         User::create($data);
+        return Redirect::to('/anggota');
     }
 
     /**

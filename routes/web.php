@@ -49,10 +49,14 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->group(function () {
     // Member Routes
     Route::get("/role", [RoleController::class, "index"])->name("role");
+    Route::get("/role/{id}/edit", [RoleController::class, "edit"])->name("role.edit");
+    Route::patch("/role/{id}/edit", [RoleController::class, "update"]);
+
 
     // Member Routes
-    Route::get("/anggota", [UserController::class, "index"])->name("member");
-    Route::post("/anggota", [UserController::class, "store"]);
+    Route::get("/anggota", [UserController::class, "index"])->name("member.index");
+    Route::get("/anggota/create", [UserController::class, "create"])->name("member.create");
+    Route::post("/anggota/create", [UserController::class, "store"]);
 
     // Book Routes
     Route::get("/buku/create", [BookController::class, "create"])->name("book.create"); // Halaman Form Store

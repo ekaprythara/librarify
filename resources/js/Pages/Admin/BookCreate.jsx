@@ -98,31 +98,31 @@ const BookCreate = ({ auth, categories, authors, publishers }) => {
             <Head title="Tambah" />
             <div className="space-y-10">
                 <h2 className="text-3xl font-semibold text-gray-700">Tambah</h2>
-                <div className="flex justify-end items-center text-gray-700">
-                    <span>
-                        <Link
-                            href={route("dashboard")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span>
-                        <Link
-                            href={route("book")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Buku
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span className="text-blue-600">Tambah Buku</span>
+
+                {/* Breadcrumbs */}
+                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
+                    <ul>
+                        <li>
+                            <Link
+                                href={route("dashboard")}
+                                className="hover:text-blue-600 transition-colors duration-300"
+                            >
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href={route("book")}
+                                className="hover:text-blue-600 transition-colors duration-300"
+                            >
+                                Buku
+                            </Link>
+                        </li>
+                        <li>Tambah Buku</li>
+                    </ul>
                 </div>
+                {/* End of Breadcrumbs */}
+
                 <Card>
                     <div className="max-w-xl">
                         <form onSubmit={handleSubmit} className="space-y-5">

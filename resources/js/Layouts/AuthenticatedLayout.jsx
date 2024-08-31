@@ -5,6 +5,8 @@ import logo from "../../../public/images/logo/librarify.png";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { FiChevronDown } from "react-icons/fi";
 import profileImg from "../../../public/images/profile.jpg";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Authenticated({ auth, children }) {
     return (
@@ -43,7 +45,7 @@ export default function Authenticated({ auth, children }) {
                                                 Role
                                             </Link>
                                             <Link
-                                                href={route("member")}
+                                                href={route("member.index")}
                                                 className="text-white text-base"
                                             >
                                                 Anggota
@@ -277,13 +279,23 @@ export default function Authenticated({ auth, children }) {
                         </div>
                     </div>
                     <div className="sm:flex sm:items-center sm:ms-6 flex justify-center items-center gap-3">
-                        <img
-                            src={profileImg}
-                            alt="Profile Image"
-                            width={50}
-                            height={50}
-                            className="bg-white rounded-full bg-cover"
-                        />
+                        {auth.user.image ? (
+                            <img
+                                src={`/storage/${auth.user.image}`}
+                                alt="Profile Image"
+                                width={50}
+                                height={50}
+                                className="bg-white rounded-full bg-cover"
+                            />
+                        ) : (
+                            <img
+                                src="https://placehold.co/50"
+                                alt="Profile Image"
+                                width={50}
+                                height={50}
+                                className="bg-white rounded-full bg-cover"
+                            />
+                        )}
                         <Popover>
                             <PopoverButton className="block text-base text-white focus:outline-none data-[active]:text-white data-[hover]:text-white data-[focus]:outline-1 data-[focus]:outline-white">
                                 <div className="flex items-center gap-2">
@@ -323,7 +335,8 @@ export default function Authenticated({ auth, children }) {
                 </div>
             </div>
             <div className="min-h-[calc(100vh-4rem)] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 bg-[#EEF7FF] pb-20">
-                {children}
+                <ToastContainer />
+                <div>{children}</div>
             </div>
         </>
     );
