@@ -2,8 +2,12 @@ import Card from "@/Components/Card";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import React from "react";
+import { useState } from "react";
 
 const MemberCreate = ({ auth }) => {
+    const [imageSrc, setImageSrc] = useState(null);
+    const [showImage, setShowImage] = useState(false);
+
     const { data, setData, post, errors, reset } = useForm({
         image: null,
         username: "",
@@ -19,55 +23,39 @@ const MemberCreate = ({ auth }) => {
         e.preventDefault();
 
         console.log(data);
-        post("/anggota/create", {
-            onSuccess: () => {
-                reset();
-            },
-        });
+        post(route("member.store"));
     };
 
     const handleFileChange = (event) => {
-        const image = document.querySelector("#image");
-        const imagePreview = document.querySelector("#image-preview");
+        const file = event.target.files[0];
 
-        imagePreview.classList.remove("hidden");
-        imagePreview.classList.add("block");
+        if (file) {
+            const reader = new FileReader();
 
-        const oFReader = new FileReader();
-        oFReader.readAsDataURL(image.files[0]);
-        oFReader.onload = function (oFREvent) {
-            imagePreview.src = oFREvent.target.result;
-        };
+            reader.onloadend = () => {
+                setImageSrc(reader.result);
+                setShowImage(true);
+            };
 
-        setData("image", event.target.files[0]);
+            reader.readAsDataURL(file);
+
+            setData("image", file);
+        }
     };
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Tambah">
             <Head title="Anggota" />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Anggota
-                </h2>
 
+            <div className="space-y-10 mt-5">
                 {/* Breadcrumbs */}
                 <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
                     <ul>
                         <li>
-                            <Link
-                                href={route("dashboard")}
-                                className="hover:text-blue-600 transition-colors duration-300"
-                            >
-                                Dashboard
-                            </Link>
+                            <Link href={route("dashboard")}>Dashboard</Link>
                         </li>
                         <li>
-                            <Link
-                                href={route("member.index")}
-                                className="hover:text-blue-600 transition-colors duration-300"
-                            >
-                                Anggota
-                            </Link>
+                            <Link href={route("member.index")}>Anggota</Link>
                         </li>
                         <li>Tambah Anggota</li>
                     </ul>
@@ -75,195 +63,211 @@ const MemberCreate = ({ auth }) => {
                 {/* End of Breadcrumbs */}
 
                 <Card>
-                    <div className="p-10 max-w-xl">
+                    <div className="max-w-xl">
                         <form
                             onSubmit={handleSubmit}
                             className="flex flex-col gap-2"
                         >
-                            {/* Input Image */}
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="image"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Foto Profil (1:1)
+                                <label className="form-control w-full">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Upload Foto Profil (1:1)
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="image"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="file-input file-input-bordered file-input-sm md:file-input-md w-full"
+                                    />
                                 </label>
-                                <input
-                                    id="image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                    className="p-2 rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
+
                                 {errors.image && (
                                     <p className="text-sm text-red-600">
                                         {errors.image}
                                     </p>
                                 )}
-                                <img
-                                    id="image-preview"
-                                    className="hidden mb-5"
-                                    width="100"
-                                    height="100"
-                                />
+
+                                {showImage && (
+                                    <div className="avatar">
+                                        <div className="w-48 md:w-52 rounded">
+                                            <img src={imageSrc} alt="Preview" />
+                                        </div>
+                                    </div>
+                                )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="username"
-                                    className="text-gray-800"
-                                >
-                                    Nama Pengguna
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Nama Pengguna
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="username"
+                                        type="text"
+                                        value={data.username}
+                                        onChange={(e) =>
+                                            setData("username", e.target.value)
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="username"
-                                    type="text"
-                                    value={data.username}
-                                    onChange={(e) =>
-                                        setData("username", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.username && (
                                     <p className="text-sm text-red-600">
                                         {errors.username}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="password"
-                                    className="text-gray-800"
-                                >
-                                    Kata Sandi
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Password
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="password"
+                                        value={data.password}
+                                        onChange={(e) =>
+                                            setData("password", e.target.value)
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    value={data.password}
-                                    onChange={(e) =>
-                                        setData("password", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.password && (
                                     <p className="text-sm text-red-600">
                                         {errors.password}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="password_confirm"
-                                    className="text-gray-800"
-                                >
-                                    Konfirmasi Kata Sandi
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Konfirmasi Password
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="password"
+                                        value={data.password_confirmation}
+                                        onChange={(e) =>
+                                            setData(
+                                                "password_confirmation",
+                                                e.target.value
+                                            )
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="password_confirmation"
-                                    type="password"
-                                    value={data.password_confirmation}
-                                    onChange={(e) =>
-                                        setData(
-                                            "password_confirmation",
-                                            e.target.value
-                                        )
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.password_confirmation && (
                                     <p className="text-sm text-red-600">
                                         {errors.password_confirmation}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label htmlFor="name" className="text-gray-800">
-                                    Nama
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">Nama</span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData("name", e.target.value)
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="name"
-                                    type="text"
-                                    value={data.name}
-                                    onChange={(e) =>
-                                        setData("name", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.name && (
                                     <p className="text-sm text-red-600">
                                         {errors.name}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="address"
-                                    className="text-gray-800"
-                                >
-                                    Address{" "}
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Alamat
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.address}
+                                        onChange={(e) =>
+                                            setData("address", e.target.value)
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="address"
-                                    type="text"
-                                    value={data.address}
-                                    onChange={(e) =>
-                                        setData("address", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.address && (
                                     <p className="text-sm text-red-600">
                                         {errors.address}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="phone_number"
-                                    className="text-gray-800"
-                                >
-                                    No. Telepon
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            No. Telepon
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="tel"
+                                        value={data.phone_number}
+                                        onChange={(e) =>
+                                            setData(
+                                                "phone_number",
+                                                e.target.value
+                                            )
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="phone_number"
-                                    type="tel"
-                                    value={data.phone_number}
-                                    onChange={(e) =>
-                                        setData("phone_number", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.phone_number && (
                                     <p className="text-sm text-red-600">
                                         {errors.phone_number}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="email"
-                                    className="text-gray-800"
-                                >
-                                    Surel
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Email
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) =>
+                                            setData("email", e.target.value)
+                                        }
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="email"
-                                    type="email"
-                                    value={data.email}
-                                    onChange={(e) =>
-                                        setData("email", e.target.value)
-                                    }
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
-                                {errors.email && (
+                                {errors.phone_number && (
                                     <p className="text-sm text-red-600">
-                                        {errors.email}
+                                        {errors.phone_number}
                                     </p>
                                 )}
                             </div>
+
                             <button
                                 type="submit"
-                                className="mt-2 w-fit rounded-md py-2 px-5 bg-blue-500 text-white outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
+                                className="btn btn-info btn-sm md:btn-md w-fit mt-2"
                             >
                                 Tambah
                             </button>

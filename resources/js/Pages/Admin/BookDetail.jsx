@@ -1,28 +1,19 @@
 import Card from "@/Components/Card";
-import Modal from "@/Components/Modal";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
-import React, { useState } from "react";
+import React from "react";
 import { GoChevronRight } from "react-icons/go";
-import { FiBookmark, FiShare2 } from "react-icons/fi";
 
 const BookDetail = ({ auth, book }) => {
     console.log(book);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     // Function to handle delete
     const handleDelete = (e) => {
         e.preventDefault();
 
-        router.post(
-            `/buku/${book.id}/delete`,
-            {
-                _method: "delete",
-            },
-            {
-                onSuccess: setIsDeleteModalOpen(false),
-            }
-        );
+        router.post(`/buku/${book.id}/delete`, {
+            _method: "delete",
+        });
     };
 
     return (
@@ -46,7 +37,7 @@ const BookDetail = ({ auth, book }) => {
                     </span>
                     <span>
                         <Link
-                            href={route("book")}
+                            href={route("book.index")}
                             className="hover:text-blue-600 transition-colors duration-300"
                         >
                             Buku
@@ -58,19 +49,21 @@ const BookDetail = ({ auth, book }) => {
                     <span className="text-blue-600">Detail Buku</span>
                 </div>
                 <Card>
-                    <div className="grid grid-cols-[1fr_2fr_1fr] gap-5">
-                        <div className="flex items-start justify-center">
+                    <div className="grid grid-cols-1 auto-rows-auto gap-8 md:grid-rows-1 md:grid-cols-[1fr_2fr_1fr]">
+                        <div className="flex items-start justify-center relative">
                             {book.image ? (
                                 <img
                                     src={`/storage/${book.image}`}
                                     alt={book.title}
                                     width={200}
+                                    className="sticky top-28 rounded-lg"
                                 />
                             ) : (
                                 <img
                                     src="https://placehold.co/200x300"
                                     alt={book.title}
                                     width={200}
+                                    className="sticky top-28 rounded-lg"
                                 />
                             )}
                         </div>
@@ -84,11 +77,11 @@ const BookDetail = ({ auth, book }) => {
                                 <h3 className="text-2xl text-gray-800">
                                     {book.title}
                                 </h3>
-                                <p className="text-sm text-gray-700 max-w-lg text-justify">
+                                <p className="text-sm text-gray-700 w-full md:max-w-lg text-justify">
                                     {book.description}
                                 </p>
                             </div>
-                            <div className="max-w-lg">
+                            <div className="w-full md:max-w-lg">
                                 <span className="block text-lg text-gray-800 mb-2">
                                     Rincian Buku
                                 </span>
@@ -153,7 +146,7 @@ const BookDetail = ({ auth, book }) => {
                                 </div>
                             </div>
                         </div>
-                        <div className="flex flex-col justify-between">
+                        <div className="flex flex-col justify-between gap-8">
                             <div className="flex flex-col gap-2">
                                 <div>
                                     <span className="block text-gray-700">
@@ -186,76 +179,53 @@ const BookDetail = ({ auth, book }) => {
                                     </span>
                                 </div>
                             </div>
-                            {auth.isAdmin ? (
-                                <div className="flex flex-col gap-2">
-                                    <Link
-                                        as="button"
-                                        href={route("book.edit", book.id)}
-                                        className="py-2 text-center px-4 w-full rounded-lg text-lg bg-yellow-500 text-gray-800"
+                            <div className="flex flex-col gap-2">
+                                {/* Button */}
+                                <Link
+                                    href={route("book.edit", book.id)}
+                                    role="button"
+                                    className="btn btn-warning btn-sm md:btn-md"
+                                >
+                                    Edit
+                                </Link>
+                                <button
+                                    className="btn btn-error btn-sm md:btn-md"
+                                    onClick={() =>
+                                        document
+                                            .getElementById("my_modal_2")
+                                            .showModal()
+                                    }
+                                >
+                                    Hapus
+                                </button>
+                            </div>
+                            {/* Modal */}
+                            <dialog id="my_modal_2" className="modal">
+                                <div className="modal-box">
+                                    <h3 className="font-bold text-lg">
+                                        Hello!
+                                    </h3>
+                                    <form
+                                        onSubmit={handleDelete}
+                                        className="flex flex-col gap-2"
                                     >
-                                        Edit
-                                    </Link>
-                                    <button
-                                        onClick={() =>
-                                            setIsDeleteModalOpen(true)
-                                        }
-                                        className="py-2 px-4 rounded-lg text-lg bg-red-500 text-white"
-                                    >
-                                        Hapus
-                                    </button>
-
-                                    <Modal
-                                        title="Hapus Buku"
-                                        show={isDeleteModalOpen}
-                                        onClose={() =>
-                                            setIsDeleteModalOpen(
-                                                !isDeleteModalOpen
-                                            )
-                                        }
-                                    >
-                                        <div className="p-5 overflow-y-scroll">
-                                            <form
-                                                onSubmit={handleDelete}
-                                                className="flex flex-col gap-2"
-                                            >
-                                                <span className="text-base py-5">
-                                                    Apakah Anda yakin ingin
-                                                    menghapus "{book.title}
-                                                    "?
-                                                </span>
-                                                <button className="mt-2 rounded-md py-2 px-5 bg-red-500 text-white outline-none focus:ring-4 focus:ring-blue-200/95 duration-100">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </Modal>
+                                        <span className="text-base py-5">
+                                            Apakah Anda yakin ingin menghapus "
+                                            {book.title}
+                                            "?
+                                        </span>
+                                        <button className="mt-2 rounded-md py-2 px-5 bg-red-500 text-white outline-none focus:ring-4 focus:ring-blue-200/95 duration-100">
+                                            Hapus
+                                        </button>
+                                    </form>
                                 </div>
-                            ) : (
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="py-2 px-4 w-full rounded-lg text-lg bg-blue-500 text-white"
-                                    >
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span>
-                                                <FiShare2 size={25} />
-                                            </span>
-                                            <span>Bagikan</span>
-                                        </div>
-                                    </button>
-                                    <button
-                                        onClick={() => setIsModalOpen(true)}
-                                        className="py-2 px-4 w-full rounded-lg text-lg bg-blue-500 text-white"
-                                    >
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span>
-                                                <FiBookmark size={25} />
-                                            </span>
-                                            <span>Simpan</span>
-                                        </div>
-                                    </button>
-                                </div>
-                            )}
+                                <form
+                                    method="dialog"
+                                    className="modal-backdrop"
+                                >
+                                    <button>close</button>
+                                </form>
+                            </dialog>
                         </div>
                     </div>
                 </Card>

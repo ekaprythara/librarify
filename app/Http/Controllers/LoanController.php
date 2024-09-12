@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Limitation;
 use App\Models\Loan;
 use App\Models\Role;
 use App\Models\User;
@@ -52,7 +53,7 @@ class LoanController extends Controller
         ]);
 
         // Retrieve the day limit for the role with ID 2 from the database
-        $dayLimit = Role::where("id", "2")->value("day_limit");
+        $dayLimit = Limitation::where("id", "1")->value("day_limit");
 
         // Set the current date and calculate the due date by adding the day limit
         $loanDate = Carbon::now();

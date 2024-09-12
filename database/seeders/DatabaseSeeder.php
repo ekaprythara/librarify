@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Author;
 use App\Models\Category;
+use App\Models\Limitation;
 use App\Models\Publisher;
 use App\Models\Role;
 use App\Models\User;
@@ -33,7 +34,10 @@ class DatabaseSeeder extends Seeder
             "name" => "Member",
         ]);
 
+        Limitation::create([]);
+
         User::create([
+            "image" => "images/users/profile.jpg",
             "username" => "ekapriyanthara",
             "password" => "password",
             "name" => "Eka Priyanthara",

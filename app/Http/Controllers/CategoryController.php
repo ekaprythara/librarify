@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class CategoryController extends Controller
 {
@@ -23,7 +24,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return inertia("Admin/CategoryCreate");
     }
 
     /**
@@ -36,6 +37,8 @@ class CategoryController extends Controller
         ]);
 
         Category::create($data);
+
+        return Redirect::to(route("category.index"))->with("message", "Data kategori berhasil ditambah.");
     }
 
     /**

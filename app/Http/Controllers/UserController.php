@@ -49,12 +49,14 @@ class UserController extends Controller
             "phone_number" => "required",
             "email" => "required",
         ]);
+
+        $data["username"] = strtolower($data["username"]);
         $data["image"] = $path;
         $data["role_id"] = 2;
-        $data['password'] = bcrypt($data['password']);
+        $data["password"] = bcrypt($data["password"]);
 
         User::create($data);
-        return Redirect::to('/anggota');
+        return Redirect::to(route("member.index"))->with("message", "Data anggota berhasil ditambah.");
     }
 
     /**

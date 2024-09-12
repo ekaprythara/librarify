@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publisher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class PublisherController extends Controller
 {
@@ -23,7 +24,7 @@ class PublisherController extends Controller
      */
     public function create()
     {
-        //
+        return inertia("Admin/PublisherCreate");
     }
 
     /**
@@ -36,6 +37,8 @@ class PublisherController extends Controller
         ]);
 
         Publisher::create($data);
+
+        return Redirect::to(route("publisher.index"))->with("message", "Data penerbit berhasil ditambah.");
     }
 
     /**

@@ -1,11 +1,19 @@
 import Card from "@/Components/Card";
 import DataTable from "@/Components/DataTable";
-import Modal from "@/Components/Modal";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
-import React, { useState } from "react";
+import { Head, Link, usePage } from "@inertiajs/react";
+import React, { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Member = ({ auth, members }) => {
+    const { flash } = usePage().props;
+
+    useEffect(() => {
+        if (flash.message) {
+            toast.success(flash.message);
+        }
+    }, [flash]);
+
     const columns = [
         {
             header: "Foto",
@@ -15,21 +23,23 @@ const Member = ({ auth, members }) => {
                 return (
                     <div className="flex justify-center items-center">
                         {image ? (
-                            <img
-                                src={`/storage/${image}`}
-                                alt="Profile Picture"
-                                width={100}
-                                height={100}
-                                className="rounded-full"
-                            />
+                            <div className="avatar">
+                                <div className="w-24 rounded-full">
+                                    <img
+                                        src={`/storage/${image}`}
+                                        alt="Profile Picture"
+                                    />
+                                </div>
+                            </div>
                         ) : (
-                            <img
-                                src="https://placehold.co/100"
-                                alt="Profile Picture"
-                                width={100}
-                                height={100}
-                                className="rounded-full"
-                            />
+                            <div className="avatar">
+                                <div className="w-24 rounded-full">
+                                    <img
+                                        src="https://placehold.co/100"
+                                        alt="Profile Picture"
+                                    />
+                                </div>
+                            </div>
                         )}
                     </div>
                 );
@@ -54,23 +64,32 @@ const Member = ({ auth, members }) => {
     ];
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Anggota">
             <Head title="Anggota" />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Anggota
-                </h2>
+
+            <div className="space-y-10 mt-5">
+                {/* Breadcrumbs */}
+                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
+                    <ul>
+                        <li>
+                            <Link href={route("dashboard")}>Dashboard</Link>
+                        </li>
+                        <li>Anggota</li>
+                    </ul>
+                </div>
+                {/* End of Breadcrumbs */}
+
                 <Card>
-                    <div>
-                        <div className="flex justify-end items-center">
-                            <Link href={route("member.create")}>
-                                <button className="py-2 px-4 rounded-lg text-lg bg-blue-500 text-white font-lato">
-                                    Tambah
-                                </button>
-                            </Link>
-                        </div>
-                        <DataTable columns={columns} data={members} />
+                    <div className="flex justify-end items-center">
+                        <Link
+                            role="button"
+                            href={route("member.create")}
+                            className="btn btn-sm md:btn-md btn-info"
+                        >
+                            Tambah
+                        </Link>
                     </div>
+                    <DataTable columns={columns} data={members} />
                 </Card>
             </div>
         </Authenticated>

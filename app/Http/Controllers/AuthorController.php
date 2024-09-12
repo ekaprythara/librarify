@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 
 class AuthorController extends Controller
 {
@@ -23,7 +24,7 @@ class AuthorController extends Controller
      */
     public function create()
     {
-        //
+        return inertia("Admin/AuthorCreate");
     }
 
     /**
@@ -36,6 +37,8 @@ class AuthorController extends Controller
         ]);
 
         Author::create($data);
+
+        return Redirect::to(route("author.index"))->with("message", "Data pengarang berhasil ditambah.");
     }
 
     /**

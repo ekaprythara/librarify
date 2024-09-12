@@ -18,7 +18,7 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = Book::with(['categories', "publishers", "authors"])->latest()->paginate(6);
+        $books = Book::with(['categories', "publishers", "authors"])->latest()->paginate(20);
         return inertia("Admin/Book", [
             "books" => $books,
         ]);

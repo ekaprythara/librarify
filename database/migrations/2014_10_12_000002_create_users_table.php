@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('phone_number')->unique();
             $table->string('email')->unique();
             $table->foreignId("role_id")->unsigned()->constrained("roles", "id")->default('2');
+            $table->boolean("status")->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

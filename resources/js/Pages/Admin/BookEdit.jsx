@@ -5,10 +5,14 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import { GoChevronRight } from "react-icons/go";
 import makeAnimated from "react-select/animated";
-import Switch from "react-switch";
+import { useEffect } from "react";
 
 const BookEdit = ({ auth, book, categories, authors, publishers }) => {
+    // Convert to boolean value
     const [isAvailable, setIsAvailable] = useState(!!book.status);
+
+    const [imageSrc, setImageSrc] = useState(null);
+    const [showImage, setShowImage] = useState(false);
 
     const formattedSelectedCategories = book.categories.map((category) => ({
         value: category.id,
@@ -38,10 +42,75 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
         label: author.name,
     }));
 
+    const formattedPublishers = publishers.map((publisher) => ({
+        value: publisher.id,
+        label: publisher.name,
+    }));
+
+    const [selectedPublisher, setSelectedPublisher] = useState(
+        formattedPublishers.find((option) => option.value === book.publisher_id)
+    );
+
     const style = {
-        control: (base) => ({
+        control: (base, state) => ({
             ...base,
-            "input[type='text']:focus": { boxShadow: "none" },
+            minHeight: "2rem",
+            paddingLeft: "0.2rem",
+            paddingRight: "0.2rem",
+            lineHeight: "1.2rem",
+
+            "@media (min-width: 768px)": {
+                minHeight: "3rem",
+                paddingLeft: "0.4rem",
+                paddingRight: "0.4rem",
+                lineHeight: "1.4rem",
+            },
+
+            fontSize: "0.875rem",
+            borderRadius: "0.5rem",
+            borderColor: "#d2d4d7",
+            "&:hover": {
+                borderColor: "#d2d4d7", // Border color on hover
+            },
+            transition: "none",
+            outline: state.isFocused ? "2px solid #d2d4d7" : "none", // Outline when focused
+            outlineOffset: "2px",
+            boxShadow: "none",
+            "input[type='text']:focus": {
+                boxShadow: "none",
+            },
+        }),
+        clearIndicator: (base) => ({
+            ...base,
+            svg: {
+                width: 15,
+                height: 15,
+            },
+            "@media (min-width: 768px)": {
+                svg: {
+                    width: 20,
+                    height: 20,
+                },
+            },
+        }),
+        dropdownIndicator: (base) => ({
+            ...base,
+            padding: 4,
+            svg: {
+                width: 15,
+                height: 15,
+            },
+            "@media (min-width: 768px)": {
+                padding: 8,
+                svg: {
+                    width: 20,
+                    height: 20,
+                },
+            },
+        }),
+        placeholder: (base) => ({
+            ...base,
+            fontSize: "0.875rem",
         }),
     };
 
@@ -89,28 +158,40 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
         );
     };
 
+    const handleSelectedPublisherChange = (selectedOptions) => {
+        setSelectedPublisher(selectedOptions);
+
+        setData("publisher_id", selectedOptions.value);
+    };
+
     const handleStatusChange = (checked) => {
         setIsAvailable(!isAvailable);
         setData("status", checked);
     };
 
     const handleFileChange = (event) => {
-        const image = document.querySelector("#image");
-        const imagePreview = document.querySelector("#image-preview");
+        const file = event.target.files[0];
 
-        if (!imagePreview.src) {
-            imagePreview.classList.remove("hidden");
-            imagePreview.classList.add("block");
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                setImageSrc(reader.result);
+                setShowImage(true);
+            };
+
+            reader.readAsDataURL(file);
+
+            setData("image", file);
         }
-
-        const oFReader = new FileReader();
-        oFReader.readAsDataURL(image.files[0]);
-        oFReader.onload = function (oFREvent) {
-            imagePreview.src = oFREvent.target.result;
-        };
-
-        setData("image", event.target.files[0]);
     };
+
+    useEffect(() => {
+        if (book.image) {
+            setShowImage(true);
+        }
+    }, []);
+
     return (
         <Authenticated auth={auth}>
             <Head title="Edit Buku" />
@@ -132,7 +213,7 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
                     </span>
                     <span>
                         <Link
-                            href={route("book")}
+                            href={route("book.index")}
                             className="hover:text-blue-600 transition-colors duration-300"
                         >
                             Buku
@@ -156,307 +237,326 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
                 </div>
                 <Card>
                     <div className="max-w-xl">
-                        <form onSubmit={handleSubmit} className="space-y-5">
+                        <form
+                            onSubmit={handleSubmit}
+                            className="flex flex-col gap-2"
+                        >
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="image"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Sampul Buku
+                                <label className="form-control w-full">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Upload Foto Buku (Direkomendasikan
+                                            Rasio 3:4)
+                                        </span>
+                                    </div>
+                                    <input
+                                        id="image"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="file-input file-input-bordered file-input-sm md:file-input-md w-full"
+                                    />
                                 </label>
-                                <input
-                                    id="image"
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                    className="p-2 rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.image && (
                                     <p className="text-sm text-red-600">
                                         {errors.image}
                                     </p>
                                 )}
-                                {book.image ? (
-                                    <img
-                                        id="image-preview"
-                                        src={`/storage/${book.image}`}
-                                        className="block mb-5"
-                                        width="200"
-                                        height="300"
-                                    />
-                                ) : (
-                                    <img
-                                        id="image-preview"
-                                        className="hidden mb-5"
-                                        width="200"
-                                        height="300"
-                                    />
-                                )}
                             </div>
-                            <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="isbn"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    ISBN
-                                </label>
-                                <input
-                                    id="isbn"
-                                    type="text"
-                                    value={data.isbn}
-                                    onChange={(e) =>
-                                        setData("isbn", e.target.value)
+
+                            {/* Show the image */}
+                            {showImage && (
+                                <img
+                                    src={
+                                        imageSrc
+                                            ? imageSrc
+                                            : `/storage/${book.image}`
                                     }
-                                    placeholder="Contoh: 9786233469319"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
+                                    alt="Image Preview"
+                                    width="200"
+                                    className="rounded-lg"
                                 />
+                            )}
+
+                            <div className="flex flex-col gap-1">
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">ISBN</span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.isbn}
+                                        onChange={(e) =>
+                                            setData("isbn", e.target.value)
+                                        }
+                                        placeholder="Contoh: 9786233469319"
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
+                                </label>
                                 {errors.isbn && (
                                     <p className="text-sm text-red-600">
                                         {errors.isbn}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="title"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Judul
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Judul
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.title}
+                                        onChange={(e) =>
+                                            setData("title", e.target.value)
+                                        }
+                                        placeholder="Contoh: Filosofi Teras"
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="title"
-                                    type="text"
-                                    value={data.title}
-                                    onChange={(e) =>
-                                        setData("title", e.target.value)
-                                    }
-                                    placeholder="Contoh: 9786233469319"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.title && (
                                     <p className="text-sm text-red-600">
                                         {errors.title}
                                     </p>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-1 w-full">
-                                <label
-                                    htmlFor="category_id"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Pilih Kategori:
+
+                            <div className="flex flex-col gap-1">
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Pilih Kategori:
+                                        </span>
+                                    </div>
+                                    <Select
+                                        options={formattedCategories}
+                                        components={makeAnimated()}
+                                        onChange={
+                                            handleSelectedCategoriesChange
+                                        }
+                                        value={selectedCategories}
+                                        closeMenuOnSelect={false}
+                                        isMulti
+                                        styles={style}
+                                        placeholder="Pilih Kategori..."
+                                    />
                                 </label>
-                                <Select
-                                    id="category_id"
-                                    options={formattedCategories}
-                                    value={selectedCategories}
-                                    onChange={handleSelectedCategoriesChange}
-                                    components={makeAnimated()}
-                                    closeMenuOnSelect={false}
-                                    isMulti
-                                    styles={style}
-                                    placeholder="Pilih Kategori..."
-                                />
                                 {errors.category_id && (
                                     <p className="text-sm text-red-600">
                                         {errors.category_id}
                                     </p>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-1 w-full">
-                                <label
-                                    htmlFor="author_id"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Pilih Penulis:
+
+                            <div className="flex flex-col gap-1">
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Pilih Pengarang:
+                                        </span>
+                                    </div>
+                                    <Select
+                                        options={formattedAuthors}
+                                        components={makeAnimated()}
+                                        onChange={handleSelectedAuthorsChange}
+                                        value={selectedAuthors}
+                                        closeMenuOnSelect={false}
+                                        isMulti
+                                        styles={style}
+                                        placeholder="Pilih Pengarang..."
+                                    />
                                 </label>
-                                <Select
-                                    id="author_id"
-                                    options={formattedAuthors}
-                                    value={selectedAuthors}
-                                    onChange={handleSelectedAuthorsChange}
-                                    components={makeAnimated()}
-                                    closeMenuOnSelect={false}
-                                    isMulti
-                                    styles={style}
-                                    placeholder="Pilih Kategori..."
-                                />
                                 {errors.author_id && (
                                     <p className="text-sm text-red-600">
                                         {errors.author_id}
                                     </p>
                                 )}
                             </div>
-                            <div className="flex flex-col gap-1 w-full">
-                                <label
-                                    htmlFor="publisher_id"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Pilih Penerbit:
+
+                            <div className="flex flex-col gap-1">
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Pilih Penerbit:
+                                        </span>
+                                    </div>
+                                    <Select
+                                        options={formattedPublishers}
+                                        components={makeAnimated()}
+                                        onChange={handleSelectedPublisherChange}
+                                        value={selectedPublisher}
+                                        styles={style}
+                                        placeholder="Pilih Penerbit..."
+                                    />
                                 </label>
-                                <select
-                                    id="publisher_id"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                    onChange={(e) =>
-                                        setData("publisher_id", e.target.value)
-                                    }
-                                >
-                                    {publishers.map((publisher) => (
-                                        <option
-                                            key={publisher.id}
-                                            value={publisher.id}
-                                        >
-                                            {publisher.name}
-                                        </option>
-                                    ))}
-                                </select>
                                 {errors.publisher_id && (
                                     <p className="text-sm text-red-600">
                                         {errors.publisher_id}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="publish_year"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Tahun Terbit
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Tahun Terbit
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.publish_year}
+                                        onChange={(e) => {
+                                            setData(
+                                                "publish_year",
+                                                e.target.value
+                                            );
+                                        }}
+                                        placeholder="Contoh: 2020"
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="publish_year"
-                                    type="text"
-                                    value={data.publish_year}
-                                    onChange={(e) =>
-                                        setData("publish_year", e.target.value)
-                                    }
-                                    placeholder="Contoh: 9786233469319"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.publish_year && (
                                     <p className="text-sm text-red-600">
                                         {errors.publish_year}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="pages"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Jumlah Halaman
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Jumlah Halaman
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.pages}
+                                        onChange={(e) =>
+                                            setData("pages", e.target.value)
+                                        }
+                                        placeholder="Contoh: 50"
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="pages"
-                                    type="text"
-                                    value={data.pages}
-                                    onChange={(e) =>
-                                        setData("pages", e.target.value)
-                                    }
-                                    placeholder="Contoh: 9786233469319"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.pages && (
                                     <p className="text-sm text-red-600">
                                         {errors.pages}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="language"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Bahasa
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Bahasa
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        value={data.language}
+                                        onChange={(e) =>
+                                            setData("language", e.target.value)
+                                        }
+                                        placeholder="Contoh: Bahasa Indonesia"
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="language"
-                                    type="text"
-                                    value={data.language}
-                                    onChange={(e) =>
-                                        setData("language", e.target.value)
-                                    }
-                                    placeholder="Contoh: 9786233469319"
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.language && (
                                     <p className="text-sm text-red-600">
                                         {errors.language}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="description"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Deskripsi
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Deskripsi
+                                        </span>
+                                    </div>
+                                    <textarea
+                                        id="description"
+                                        type="text"
+                                        value={data.description}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
+                                        rows={8}
+                                        placeholder="Contoh: Pada tahun 250 sebelum masehi, sebuah..."
+                                        className="textarea textarea-bordered"
+                                    ></textarea>
                                 </label>
-                                <textarea
-                                    id="description"
-                                    type="text"
-                                    value={data.description}
-                                    onChange={(e) =>
-                                        setData("description", e.target.value)
-                                    }
-                                    rows={5}
-                                    placeholder="Contoh: Lebih dari 2000 tahun lalu, sebuah..."
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                ></textarea>
                                 {errors.description && (
                                     <p className="text-sm text-red-600">
                                         {errors.description}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="quantity"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Jumlah
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Jumlah
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        value={data.remaining_stock}
+                                        onChange={(e) =>
+                                            setData(
+                                                "remaining_stock",
+                                                e.target.value
+                                            )
+                                        }
+                                        min="1"
+                                        placeholder="Contoh: 20, 25, ..."
+                                        className="input input-sm md:input-md input-bordered w-full max-w-xl"
+                                    />
                                 </label>
-                                <input
-                                    id="remaining_stock"
-                                    type="number"
-                                    value={data.remaining_stock}
-                                    onChange={(e) =>
-                                        setData(
-                                            "remaining_stock",
-                                            e.target.value
-                                        )
-                                    }
-                                    placeholder="Contoh: 20, 25, ..."
-                                    className="rounded-lg border-gray-300 outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
-                                />
                                 {errors.remaining_stock && (
                                     <p className="text-sm text-red-600">
                                         {errors.remaining_stock}
                                     </p>
                                 )}
                             </div>
+
                             <div className="flex flex-col gap-1">
-                                <label
-                                    htmlFor="status"
-                                    className="text-sm font-medium text-gray-800"
-                                >
-                                    Status
+                                <label className="form-control w-full max-w-xl">
+                                    <div className="label">
+                                        <span className="label-text">
+                                            Status
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="checkbox"
+                                        className="toggle"
+                                        onChange={handleStatusChange}
+                                        checked={isAvailable}
+                                    />
                                 </label>
-                                <Switch
-                                    onChange={handleStatusChange}
-                                    checked={isAvailable}
-                                />
                                 {errors.status && (
                                     <p className="text-sm text-red-600">
                                         {errors.status}
                                     </p>
                                 )}
                             </div>
+
                             <button
                                 type="submit"
-                                className="mt-2 rounded-md py-2 px-5 bg-blue-500 text-white outline-none focus:ring-4 focus:ring-blue-200/95 duration-100"
+                                className="btn btn-info btn-sm md:btn-md w-fit mt-2"
                             >
-                                Simpan
+                                Tambah
                             </button>
                         </form>
                     </div>
