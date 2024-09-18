@@ -17,7 +17,6 @@ export const DataTableMinimal = ({ columns, data, setSelected }) => {
     const [rowSelection, setRowSelection] = useState({});
 
     const table = useReactTable({
-        getRowId: (row) => row.uuid,
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),

@@ -6,6 +6,7 @@ import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import React from "react";
 import { useEffect } from "react";
+import { toast } from "react-toastify";
 
 const Returning = ({ auth, returnings }) => {
     const { flash } = usePage().props;

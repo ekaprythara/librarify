@@ -160,21 +160,6 @@ const LoanCreate = ({ auth, loans, users }) => {
             accessorFn: (row) => row.due_date,
             header: "Jatuh Tempo",
         },
-        {
-            id: "isLost",
-            header: "Hilang",
-
-            //! Fix: Implementasi isLost jika buku hilang.
-            cell: ({ row }) => (
-                <div className="flex justify-center items-center">
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        disabled={!row.getCanSelect()}
-                        onChange={row.getToggleSelectedHandler()}
-                    />
-                </div>
-            ),
-        },
     ];
 
     const { data, setData, post, errors, reset } = useForm({

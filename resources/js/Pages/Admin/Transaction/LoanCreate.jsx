@@ -156,12 +156,11 @@ const LoanCreate = ({ auth, books, users }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log(data);
-        // post(route("loan.store"), {
-        //     onSuccess: () => {
-        //         reset();
-        //     },
-        // });
+        post(route("loan.store"), {
+            onSuccess: () => {
+                reset();
+            },
+        });
     };
 
     return (

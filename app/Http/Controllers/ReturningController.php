@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
 use App\Models\Loan;
 use App\Models\Returning;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReturningController extends Controller
 {
@@ -25,8 +28,10 @@ class ReturningController extends Controller
      */
     public function create()
     {
-        $users = User::whereHas("loans")->get();
-        $loans = Loan::with(["users", "books"])->get();
+        $users = User::whereHas('loans', function ($query) {
+            $query->where('status', 'dipinjam');
+        })->get();
+        $loans = Loan::with(["users", "books"])->where("status", "dipinjam")->get();
 
         return inertia("Admin/Transaction/ReturningCreate", [
             "loans" => $loans,
@@ -45,7 +50,35 @@ class ReturningController extends Controller
             "loan_id.*" => "required|integer",
         ]);
 
-        dd($request->all());
+        $returnDate = Carbon::now();
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->loan_id as $loanId) {
+                $data = [
+                    "loan_id" => $loanId,
+                    "return_date" => $returnDate->format("Y-m-d"),
+                    "isLost" => false,
+                ];
+
+                $_bookId = Loan::where("id", $loanId)->value("book_id");
+                Book::where("id", $_bookId)->increment("remaining_stock");
+
+                Loan::where("id", $loanId)->update(["status" => "dikembalikan"]);
+
+                Returning::create($data);
+            }
+
+            DB::commit();
+
+            return redirect("/pengembalian")
+                ->with("success", "Berhasil mengembalikan buku.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect("/pengembalian/create")
+                ->with("message", "Error: " . $e->getMessage());
+        }
     }
 
     /**

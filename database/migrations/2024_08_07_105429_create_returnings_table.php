@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId("loan_id")->constrained("loans", "id");
             $table->date("return_date");
-            $table->boolean("isLost")->default(true);
+            $table->boolean("isLost")->default(false);
             $table->timestamps();
         });
     }
