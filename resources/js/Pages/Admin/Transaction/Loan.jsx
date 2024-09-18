@@ -1,13 +1,23 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
 import DataTable from "@/Components/DataTable";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import React from "react";
-import { GoChevronRight } from "react-icons/go";
-
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { LOAN_BREADCRUMBS } from "@/constants/breadcrumbs";
 const Loan = ({ auth, loans }) => {
     const { flash } = usePage().props;
-    console.log(flash);
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+        if (flash.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
 
     const columns = [
         {
@@ -37,12 +47,12 @@ const Loan = ({ auth, loans }) => {
                 return (
                     <div className="flex justify-center items-center">
                         <span
-                            className={`rounded-md text-center px-2 py-1 text-xs text-white font-bold uppercase ${
+                            className={`badge text-xs tracking-wider text-bold text-white uppercase ${
                                 row.original.status === "dipinjam"
-                                    ? "bg-blue-600"
+                                    ? "badge-info"
                                     : row.original.status === "dikembalikan"
-                                    ? "bg-green-600"
-                                    : "bg-red-600"
+                                    ? "badge-success"
+                                    : "badge-error"
                             }`}
                         >
                             {row.original.status}
@@ -54,39 +64,24 @@ const Loan = ({ auth, loans }) => {
     ];
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Peminjaman">
             <Head title="Peminjaman" />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Peminjaman
-                </h2>
-                <div className="flex justify-end items-center text-gray-700">
-                    <span>
-                        <Link
-                            href={route("dashboard")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span className="text-blue-600">Peminjaman</span>
-                </div>
+
+            <div className="space-y-10 mt-5">
+                <Breadcrumbs data={LOAN_BREADCRUMBS} />
+
                 <Card>
-                    <div>
-                        <div className="flex justify-end items-center">
-                            <Link
-                                as="button"
-                                href={route("loan.create")}
-                                className="py-2 text-center px-4 rounded-lg text-lg bg-blue-600 text-white w-fit"
-                            >
-                                Tambah
-                            </Link>
-                        </div>
-                        <DataTable columns={columns} data={loans} />
+                    <div className="flex justify-end items-center">
+                        <Link
+                            role="button"
+                            href={route("loan.create")}
+                            className="btn btn-sm md:btn-md btn-info"
+                        >
+                            Tambah
+                        </Link>
                     </div>
+
+                    <DataTable columns={columns} data={loans} />
                 </Card>
             </div>
         </Authenticated>

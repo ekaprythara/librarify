@@ -4,9 +4,9 @@ import Card from "@/Components/Card";
 import { useRef } from "react";
 import { useEffect } from "react";
 import { Breadcrumbs } from "@/Components/Breadcrumbs";
-import { CATEGORY_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
+import { CATEGORY_EDIT_BREADCRUMBS } from "@/constants/breadcrumbs";
 
-export default function CategoryCreate({ auth }) {
+export default function CategoryEdit({ auth, category }) {
     const inputRef = useRef();
 
     useEffect(() => {
@@ -15,39 +15,38 @@ export default function CategoryCreate({ auth }) {
         }
     }, []);
 
-    const { data, setData, post, errors } = useForm({
-        name: "",
+    const { data, setData, patch, errors } = useForm({
+        name: category.name,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         console.log(data);
-        post(route("category.store"));
+        patch(route("category.update", category.id));
     };
 
     return (
-        <AuthenticatedLayout auth={auth} header="Tambah">
+        <AuthenticatedLayout auth={auth} header="Edit">
             <Head title="Kategori" />
 
             <div className="space-y-10 mt-5">
-                <Breadcrumbs data={CATEGORY_CREATE_BREADCRUMBS} />
+                <Breadcrumbs data={CATEGORY_EDIT_BREADCRUMBS} />
 
                 <Card>
                     <section className="max-w-xl">
                         <header>
                             <h3 className="text-lg font-medium text-gray-900">
-                                Tambah Kategori
+                                Edit Kategori
                             </h3>
 
                             <p className="mt-1 text-sm text-gray-600">
-                                Tambahkan kategori buku untuk memudahkan
-                                pengelompokan dan pencarian.
+                                Anda dapat mengedit kategori buku ini sesuai
+                                kategori yang cocok.
                             </p>
                         </header>
                         <form
                             onSubmit={handleSubmit}
-                            className="flex flex-col mt-6 space-y-6"
+                            className="flex flex-col gap-2 mt-6 space-y-6"
                         >
                             <div className="flex flex-col gap-1">
                                 <label className="form-control w-full max-w-xl">

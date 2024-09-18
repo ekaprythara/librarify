@@ -38,7 +38,7 @@ class PublisherController extends Controller
 
         Publisher::create($data);
 
-        return Redirect::to(route("publisher.index"))->with("message", "Data penerbit berhasil ditambah.");
+        return Redirect::to(route("publisher.index"))->with("success", "Data penerbit berhasil ditambah.");
     }
 
     /**
@@ -52,17 +52,27 @@ class PublisherController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Publisher $publisher)
+    public function edit(Publisher $publisher, $id)
     {
-        //
+        $publisher = Publisher::find($id);
+
+        return inertia("Admin/PublisherEdit", [
+            "publisher" => $publisher
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Publisher $publisher)
+    public function update(Request $request, Publisher $publisher, $id)
     {
-        //
+        $data = $request->validate([
+            "name" => "required"
+        ]);
+
+        Publisher::find($id)->update($data);
+
+        return Redirect::to(route("publisher.index"))->with("success", "Data penerbit berhasil diubah.");
     }
 
     /**

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Author;
+use App\Models\Book;
 use App\Models\Category;
 use App\Models\Limitation;
 use App\Models\Publisher;
@@ -19,12 +20,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        Limitation::create([]);
 
         Role::create([
             "name" => "Admin",
@@ -33,8 +29,6 @@ class DatabaseSeeder extends Seeder
         Role::create([
             "name" => "Member",
         ]);
-
-        Limitation::create([]);
 
         User::create([
             "image" => "images/users/profile.jpg",
@@ -57,6 +51,16 @@ class DatabaseSeeder extends Seeder
             "role_id" => 2
         ]);
 
+        User::create([
+            "username" => "amanda",
+            "password" => "password",
+            "name" => "Amanda",
+            "address" => "Jalan Hang Tuah",
+            "phone_number" => "085175088590",
+            "email" => "amanda@gmail.com",
+            "role_id" => 2
+        ]);
+
         Category::create([
             "name" => "Filsafat",
         ]);
@@ -64,21 +68,42 @@ class DatabaseSeeder extends Seeder
             "name" => "Fiksi",
         ]);
         Category::create([
-            "name" => "Sains",
+            "name" => "Fiksi Ilmiah",
+        ]);
+        Category::create([
+            "name" => "Aksi & Petualangan",
+        ]);
+        Category::create([
+            "name" => "Misteri",
+        ]);
+        Category::create([
+            "name" => "Biografi",
+        ]);
+        Category::create([
+            "name" => "Seni & Fotografi",
+        ]);
+        Category::create([
+            "name" => "Sejarah",
+        ]);
+        Category::create([
+            "name" => "Religi & Spiritual",
+        ]);
+        Category::create([
+            "name" => "Sains & Teknologi",
         ]);
 
         Author::create([
             "name" => "Henry Manampiring",
         ]);
         Author::create([
-            "name" => "Sanguin",
-        ]);
-        Author::create([
-            "name" => "James Paul",
+            "name" => "Jonathan Black",
         ]);
 
         Publisher::create([
-            "name" => "PT. Kompas Media Nusantara",
+            "name" => "Penerbit Buku Kompas",
+        ]);
+        Publisher::create([
+            "name" => "Pustaka Alvabet",
         ]);
     }
 }

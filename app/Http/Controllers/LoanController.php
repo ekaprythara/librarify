@@ -33,7 +33,8 @@ class LoanController extends Controller
      */
     public function create()
     {
-        $books = Book::where("remaining_stock", ">", "0")->where("status", true)->get();
+        // ->where("remaining_stock", ">", "0")
+        $books = Book::with('authors')->where("remaining_stock", ">", "0")->where("status", true)->get();
         $users = User::where("role_id", "2")->get();
         return inertia("Admin/Transaction/LoanCreate", [
             "books" => $books,
@@ -44,7 +45,7 @@ class LoanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         // Validate incoming request to ensure 'book_id' is an array of integers
         $request->validate([
@@ -52,49 +53,79 @@ class LoanController extends Controller
             "book_id.*" => "required|integer",
         ]);
 
-        // Retrieve the day limit for the role with ID 2 from the database
-        $dayLimit = Limitation::where("id", "1")->value("day_limit");
+        // Retrieve the first data of day_limit and book_limit
+        $dayLimit = Limitation::pluck("day_limit")->first();
+        $bookLimit = Limitation::pluck("book_limit")->first();
 
-        // Set the current date and calculate the due date by adding the day limit
+        // Retrieve user with loan count
+        $bookLoanedByUserCount = Loan::where("status", "dipinjam")->where('user_id', $request->user_id)->count();
+
         $loanDate = Carbon::now();
         $dueDate = Carbon::now()->addDays($dayLimit);
+
+        $userName = User::where('id', $request->user_id)->pluck('name')->first();
 
         try {
             // Start a database transaction
             DB::beginTransaction();
 
-            // Iterate through each book ID provided in the request
-            foreach ($request->book_id as $bookId) {
-                // Prepare data for creating a new loan entry
-                $data = [
-                    "user_id" => $request->user_id,
-                    "book_id" => $bookId,
-                    "loan_date" => $loanDate->format("Y-m-d"),
-                    "due_date" => $dueDate->format("Y-m-d"),
-                ];
+            // Check if the number of books already loaned is less than the limit
+            if ($bookLoanedByUserCount < $bookLimit) {
+                // Iterate through each book ID provided in the request
+                foreach ($request->book_id as $bookId) {
+                    // Check if the book is already loaned by the user
+                    $alreadyLoaned = Loan::where("status", "dipinjam")
+                        ->where("user_id", $request->user_id)
+                        ->where("book_id", $bookId)
+                        ->exists();
 
-                // Decrement the remaining stock of the book
-                Book::where("id", $bookId)->decrement("remaining_stock");
+                    // Check if the book has stock available
+                    $isNotAvailable = Book::where('id', $bookId)
+                        ->where('remaining_stock', '<=', 0)
+                        ->where("status", true)
+                        ->exists();
 
-                // Create a new loan entry in the database
-                Loan::create($data);
+                    if ($alreadyLoaned || $isNotAvailable) {
+                        // If the book is already loaned by the user, roll back and return an error message
+                        DB::rollBack();
+                        return redirect("/peminjaman")
+                            ->with("error", "Buku tidak tersedia atau sedang dipinjam oleh pengguna ini.");
+                    }
+
+                    // Prepare data for creating a new loan entry
+                    $data = [
+                        "user_id" => $request->user_id,
+                        "book_id" => $bookId,
+                        "loan_date" => $loanDate->format("Y-m-d"),
+                        "due_date" => $dueDate->format("Y-m-d"),
+                    ];
+
+                    // Decrement the remaining stock of the book
+                    Book::where("id", $bookId)->decrement("remaining_stock");
+
+                    // Create a new loan entry in the database
+                    Loan::create($data);
+                }
+
+                // Commit the transaction if all operations are successful
+                DB::commit();
+
+                // Redirect to the list of loans with a success message
+                return redirect("/peminjaman")
+                    ->with("success", "$userName berhasil meminjam buku.");
+            } else {
+                DB::rollBack();
+                return redirect("/peminjaman")
+                    ->with("error", "Tidak dapat meminjam buku karena $userName telah melebihi batas peminjaman.");
             }
-
-            // Commit the transaction if all operations are successful
-            DB::commit();
-
-            // Redirect to the list of loans with a success message
-            return redirect("/peminjaman")
-                ->with("message", "Data berhasil disimpan.");
         } catch (\Exception $e) {
             // Rollback the transaction if an exception occurs
             DB::rollBack();
-
-            // Redirect to the loan creation page with an error message
             return redirect("/peminjaman/create")
                 ->with("message", "Error: " . $e->getMessage());
         }
     }
+
 
     /**
      * Display the specified resource.

@@ -3,7 +3,7 @@ import { useForm } from "@inertiajs/react";
 import React from "react";
 
 const UpdateLimitation = ({ limitation }) => {
-    const { data, setData, patch, errors } = useForm({
+    const { data, setData, patch, processing } = useForm({
         book_limit: limitation.book_limit,
         day_limit: limitation.day_limit,
     });
@@ -27,60 +27,74 @@ const UpdateLimitation = ({ limitation }) => {
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div className="flex flex-col gap-1">
-                    <label htmlFor="book_limit">Batas Buku</label>
-                    <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        className="range range-sm"
-                        step="1"
-                        id="book_limit"
-                        defaultValue={data.book_limit}
-                        onChange={(e) => setData("book_limit", e.target.value)}
-                    />
-                    <div className="flex w-full justify-between px-2 text-xs">
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                    </div>
+                    <label className="form-control w-full max-w-xl">
+                        <div className="label">
+                            <span className="label-text">Batas Buku</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="1"
+                            max="10"
+                            className="range range-sm"
+                            step="1"
+                            id="book_limit"
+                            defaultValue={data.book_limit}
+                            onChange={(e) =>
+                                setData("book_limit", e.target.value)
+                            }
+                        />
+                        <div className="flex w-full justify-between px-2 text-xs">
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                        </div>
+                    </label>
                 </div>
                 <div className="flex flex-col gap-1">
-                    <label htmlFor="day_limit">Batas Hari</label>
-                    <input
-                        type="range"
-                        min="1"
-                        max="14"
-                        className="range range-sm"
-                        step="1"
-                        id="day_limit"
-                        defaultValue={data.day_limit}
-                        onChange={(e) => setData("day_limit", e.target.value)}
-                    />
-                    <div className="flex w-full justify-between px-2 text-xs">
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                        <span>|</span>
-                    </div>
+                    <label className="form-control w-full max-w-xl">
+                        <div className="label">
+                            <span className="label-text">Batas Hari</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="1"
+                            max="14"
+                            className="range range-sm"
+                            step="1"
+                            id="day_limit"
+                            defaultValue={data.day_limit}
+                            onChange={(e) =>
+                                setData("day_limit", e.target.value)
+                            }
+                        />
+                        <div className="flex w-full justify-between px-2 text-xs">
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                            <span>|</span>
+                        </div>
+                    </label>
                 </div>
-                <button className="btn btn-info">Submit</button>
+                <button className="btn btn-info" disabled={processing}>
+                    Simpan
+                </button>
             </form>
         </section>
     );

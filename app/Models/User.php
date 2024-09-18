@@ -43,16 +43,21 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->role()->where("id", "1")->exists();
+        return $this->role_id === 1;
     }
 
     public function isMember()
     {
-        return $this->role()->where("id", "2")->exists();
+        return $this->role_id === 2;
     }
 
     public function role()
     {
         return $this->belongsTo(Role::class, "role_id");
+    }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
     }
 }

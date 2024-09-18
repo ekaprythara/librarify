@@ -11,6 +11,7 @@ use App\Http\Controllers\ReturningController;
 use App\Http\Controllers\SearchBookController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\UserController;
+use App\Models\Publisher;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -57,8 +58,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post("/anggota/create", [UserController::class, "store"])->name("member.store");
 
     // Book Routes
-    Route::get("/buku/create", [BookController::class, "create"])->name("book.create"); // Halaman Form Store
-    Route::post("/buku/create", [BookController::class, "store"])->name("book.store"); // Logika Store
+    Route::get("/buku/create", [BookController::class, "create"])->name("book.create");
+    Route::post("/buku/create", [BookController::class, "store"])->name("book.store");
     Route::get("/buku/{id}/edit", [BookController::class, "edit"])->name("book.edit");
     Route::patch("/buku/{id}/edit", [BookController::class, "update"])->name("book.update");
     Route::delete("/buku/{book}/delete", [BookController::class, "destroy"])->name("book.destroy");
@@ -67,23 +68,31 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get("/kategori", [CategoryController::class, "index"])->name("category.index");
     Route::get("/kategori/create", [CategoryController::class, "create"])->name("category.create");
     Route::post("/kategori/create", [CategoryController::class, "store"])->name("category.store");
+    Route::get("/kategori/{id}/edit", [CategoryController::class, "edit"])->name("category.edit");
+    Route::patch("/kategori/{id}/edit", [CategoryController::class, "update"])->name("category.update");
 
     // Author Routes
     Route::get("/pengarang", [AuthorController::class, "index"])->name("author.index");
     Route::get("/pengarang/create", [AuthorController::class, "create"])->name("author.create");
     Route::post("/pengarang/create", [AuthorController::class, "store"])->name("author.store");
+    Route::get("/pengarang/{id}/edit", [AuthorController::class, "edit"])->name("author.edit");
+    Route::patch("/pengarang/{id}/edit", [AuthorController::class, "update"])->name("author.update");
 
     // Publisher Routes
     Route::get("/penerbit", [PublisherController::class, "index"])->name("publisher.index");
     Route::get("/penerbit/create", [PublisherController::class, "create"])->name("publisher.create");
     Route::post("/penerbit/create", [PublisherController::class, "store"])->name("publisher.store");
+    Route::get("/penerbit/{id}/edit", [PublisherController::class, "edit"])->name("publisher.edit");
+    Route::patch("/penerbit/{id}/edit", [PublisherController::class, "update"])->name("publisher.update");
 
     // Transaksi
     Route::get("/peminjaman", [LoanController::class, "index"])->name("loan.index");
     Route::get("/peminjaman/create", [LoanController::class, "create"])->name("loan.create");
-    Route::post("/peminjaman/create", [LoanController::class, "store"]);
+    Route::post("/peminjaman/create", [LoanController::class, "store"])->name("loan.store");
 
     Route::get("/pengembalian", [ReturningController::class, "index"])->name("returning.index");
+    Route::get("/pengembalian/create", [ReturningController::class, "create"])->name("returning.create");
+    Route::post("/pengembalian/create", [ReturningController::class, "store"])->name("returning.store");
 });
 
 Route::get("/buku/{id}", [BookController::class, "show"])->name("book.show");

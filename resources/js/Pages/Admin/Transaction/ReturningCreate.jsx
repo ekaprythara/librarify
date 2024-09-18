@@ -8,15 +8,34 @@ import { useEffect } from "react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Breadcrumbs } from "@/Components/Breadcrumbs";
-import { LOAN_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
+import {
+    LOAN_CREATE_BREADCRUMBS,
+    RETURNING_CREATE_BREADCRUMBS,
+} from "@/constants/breadcrumbs";
 
-const LoanCreate = ({ auth, books, users }) => {
+const LoanCreate = ({ auth, loans, users }) => {
+    const [selectedUser, setSelectedUser] = useState();
     const [selectedBooks, setSelectedBooks] = useState([]);
+    const [selectedLoans, setSelectedLoans] = useState([]);
 
     const formattedUsers = users.map((user) => ({
         value: user.id,
         label: user.name,
     }));
+
+    // console.log(loans);
+
+    useEffect(() => {
+        const books = loans.filter((loan) => loan.user_id === selectedUser);
+
+        // console.log("Books: ", books);
+        setSelectedBooks(books);
+        setSelectedLoans([]);
+    }, [selectedUser]);
+
+    useEffect(() => {
+        setData("loan_id", selectedLoans);
+    }, [selectedLoans]);
 
     const style = {
         control: (base, state) => ({
@@ -81,10 +100,6 @@ const LoanCreate = ({ auth, books, users }) => {
         }),
     };
 
-    useEffect(() => {
-        setData("book_id", selectedBooks);
-    }, [selectedBooks]);
-
     const columns = [
         {
             id: "select-col",
@@ -110,20 +125,21 @@ const LoanCreate = ({ auth, books, users }) => {
         {
             header: "Image",
             cell: ({ row }) => {
-                const image = row.original.image;
+                const book = row.original.books;
+
                 return (
                     <div className="flex justify-center items-center">
-                        {image ? (
+                        {book.image ? (
                             <img
-                                src={`/storage/${image}`}
-                                alt={row.original.title}
+                                src={`/storage/${book.image}`}
+                                alt={book.title}
                                 width={150}
                                 className="rounded-md"
                             />
                         ) : (
                             <img
                                 src="https://placehold.co/150x225"
-                                alt={row.original.title}
+                                alt={book.title}
                                 width={150}
                                 className="rounded-md"
                             />
@@ -133,43 +149,55 @@ const LoanCreate = ({ auth, books, users }) => {
             },
         },
         {
-            accessorKey: "isbn",
+            accessorFn: (row) => row.books.isbn,
             header: "ISBN",
         },
         {
-            accessorKey: "title",
+            accessorFn: (row) => row.books.title,
             header: "Judul",
         },
         {
-            accessorFn: (row) => {
-                return row.authors.map((author) => author.name).join(", ");
-            },
-            header: "Penulis",
+            accessorFn: (row) => row.due_date,
+            header: "Jatuh Tempo",
+        },
+        {
+            id: "isLost",
+            header: "Hilang",
+
+            //! Fix: Implementasi isLost jika buku hilang.
+            cell: ({ row }) => (
+                <div className="flex justify-center items-center">
+                    <Checkbox
+                        checked={row.getIsSelected()}
+                        disabled={!row.getCanSelect()}
+                        onChange={row.getToggleSelectedHandler()}
+                    />
+                </div>
+            ),
         },
     ];
 
     const { data, setData, post, errors, reset } = useForm({
-        book_id: [],
-        user_id: users[0].id,
+        loan_id: [],
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         console.log(data);
-        // post(route("loan.store"), {
-        //     onSuccess: () => {
-        //         reset();
-        //     },
-        // });
+        post(route("returning.store"), {
+            onSuccess: () => {
+                reset();
+            },
+        });
     };
 
     return (
         <Authenticated auth={auth} header="Tambah">
-            <Head title="Tambah" />
+            <Head title="Tambah Pengembalian" />
 
             <div className="space-y-10 mt-5">
-                <Breadcrumbs data={LOAN_CREATE_BREADCRUMBS} />
+                <Breadcrumbs data={RETURNING_CREATE_BREADCRUMBS} />
 
                 <Card>
                     <form onSubmit={handleSubmit} className="space-y-5">
@@ -184,10 +212,7 @@ const LoanCreate = ({ auth, books, users }) => {
                                     options={formattedUsers}
                                     components={makeAnimated()}
                                     onChange={(selectedOptions) =>
-                                        setData(
-                                            "user_id",
-                                            selectedOptions.value
-                                        )
+                                        setSelectedUser(selectedOptions.value)
                                     }
                                     styles={style}
                                     placeholder="Pilih Anggota..."
@@ -201,9 +226,9 @@ const LoanCreate = ({ auth, books, users }) => {
                         </div>
 
                         <DataTableMinimal
-                            data={books}
+                            data={selectedBooks}
                             columns={columns}
-                            setSelected={setSelectedBooks}
+                            setSelected={setSelectedLoans}
                         />
 
                         <button

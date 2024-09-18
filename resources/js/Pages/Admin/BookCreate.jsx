@@ -1,8 +1,10 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
+import { BOOK_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import Select from "react-select";
 import { Head, Link, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
+import Select from "react-select";
 import makeAnimated from "react-select/animated";
 
 const BookCreate = ({ auth, categories, authors, publishers }) => {
@@ -131,6 +133,7 @@ const BookCreate = ({ auth, categories, authors, publishers }) => {
 
     const handleStatusChange = (e) => {
         setIsAvailable(!isAvailable);
+
         setData("status", e.target.checked);
     };
 
@@ -156,19 +159,7 @@ const BookCreate = ({ auth, categories, authors, publishers }) => {
             <Head title="Tambah" />
 
             <div className="space-y-10 mt-5">
-                {/* Breadcrumbs */}
-                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
-                    <ul>
-                        <li>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        </li>
-                        <li>
-                            <Link href={route("book.index")}>Buku</Link>
-                        </li>
-                        <li>Tambah Buku</li>
-                    </ul>
-                </div>
-                {/* End of Breadcrumbs */}
+                <Breadcrumbs data={BOOK_CREATE_BREADCRUMBS} />
 
                 <Card>
                     <div className="max-w-xl">

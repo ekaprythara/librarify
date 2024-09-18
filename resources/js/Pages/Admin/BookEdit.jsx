@@ -6,6 +6,8 @@ import React, { useState } from "react";
 import { GoChevronRight } from "react-icons/go";
 import makeAnimated from "react-select/animated";
 import { useEffect } from "react";
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
+import { BOOK_EDIT_BREADCRUMBS } from "@/constants/breadcrumbs";
 
 const BookEdit = ({ auth, book, categories, authors, publishers }) => {
     // Convert to boolean value
@@ -164,9 +166,9 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
         setData("publisher_id", selectedOptions.value);
     };
 
-    const handleStatusChange = (checked) => {
+    const handleStatusChange = (e) => {
         setIsAvailable(!isAvailable);
-        setData("status", checked);
+        setData("status", e.target.checked);
     };
 
     const handleFileChange = (event) => {
@@ -193,48 +195,11 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
     }, []);
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Edit Buku">
             <Head title="Edit Buku" />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Edit Buku
-                </h2>
-                <div className="flex justify-end items-center text-gray-700">
-                    <span>
-                        <Link
-                            href={route("dashboard")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span>
-                        <Link
-                            href={route("book.index")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Buku
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span>
-                        <Link
-                            href={route("book.show", book.id)}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Detail Buku
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span className="text-blue-600">Edit Buku</span>
-                </div>
+            <div className="space-y-10 mt-5">
+                <Breadcrumbs data={BOOK_EDIT_BREADCRUMBS} />
+
                 <Card>
                     <div className="max-w-xl">
                         <form
@@ -556,7 +521,7 @@ const BookEdit = ({ auth, book, categories, authors, publishers }) => {
                                 type="submit"
                                 className="btn btn-info btn-sm md:btn-md w-fit mt-2"
                             >
-                                Tambah
+                                Simpan
                             </button>
                         </form>
                     </div>

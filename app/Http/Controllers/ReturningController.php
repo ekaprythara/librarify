@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Loan;
 use App\Models\Returning;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ReturningController extends Controller
@@ -23,7 +25,13 @@ class ReturningController extends Controller
      */
     public function create()
     {
-        //
+        $users = User::whereHas("loans")->get();
+        $loans = Loan::with(["users", "books"])->get();
+
+        return inertia("Admin/Transaction/ReturningCreate", [
+            "loans" => $loans,
+            "users" => $users
+        ]);
     }
 
     /**
@@ -31,7 +39,13 @@ class ReturningController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate incoming request to ensure 'loan_id' is an array of integers
+        $request->validate([
+            "loan_id" => "required|array",
+            "loan_id.*" => "required|integer",
+        ]);
+
+        dd($request->all());
     }
 
     /**

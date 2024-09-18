@@ -1,13 +1,23 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
 import DataTable from "@/Components/DataTable";
+import { RETURNING_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import React from "react";
-import { GoChevronRight } from "react-icons/go";
+import { useEffect } from "react";
 
 const Returning = ({ auth, returnings }) => {
     const { flash } = usePage().props;
-    console.log(returnings);
+
+    useEffect(() => {
+        if (flash.success) {
+            toast.success(flash.success);
+        }
+        if (flash.error) {
+            toast.error(flash.error);
+        }
+    }, [flash]);
 
     const columns = [
         {
@@ -41,39 +51,24 @@ const Returning = ({ auth, returnings }) => {
     ];
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Pengembalian">
             <Head title="Pengembalian" />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Pengembalian
-                </h2>
-                <div className="flex justify-end items-center text-gray-700">
-                    <span>
-                        <Link
-                            href={route("dashboard")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span className="text-blue-600">Pengembalian</span>
-                </div>
+
+            <div className="space-y-10 mt-5">
+                <Breadcrumbs data={RETURNING_BREADCRUMBS} />
+
                 <Card>
-                    <div>
-                        <div className="flex justify-end items-center">
-                            <Link
-                                as="button"
-                                href={route("loan.create")}
-                                className="py-2 text-center px-4 rounded-lg text-lg bg-blue-600 text-white w-fit"
-                            >
-                                Tambah
-                            </Link>
-                        </div>
-                        <DataTable columns={columns} data={returnings} />
+                    <div className="flex justify-end items-center">
+                        <Link
+                            role="button"
+                            href={route("returning.create")}
+                            className="btn btn-sm md:btn-md btn-info"
+                        >
+                            Tambah
+                        </Link>
                     </div>
+
+                    <DataTable columns={columns} data={returnings} />
                 </Card>
             </div>
         </Authenticated>

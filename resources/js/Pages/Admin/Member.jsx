@@ -1,5 +1,7 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
 import DataTable from "@/Components/DataTable";
+import { MEMBER_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import React, { useEffect } from "react";
@@ -9,8 +11,8 @@ const Member = ({ auth, members }) => {
     const { flash } = usePage().props;
 
     useEffect(() => {
-        if (flash.message) {
-            toast.success(flash.message);
+        if (flash.success) {
+            toast.success(flash.success);
         }
     }, [flash]);
 
@@ -19,7 +21,6 @@ const Member = ({ auth, members }) => {
             header: "Foto",
             cell: ({ row }) => {
                 const image = row.original.image;
-                console.log(image);
                 return (
                     <div className="flex justify-center items-center">
                         {image ? (
@@ -68,16 +69,7 @@ const Member = ({ auth, members }) => {
             <Head title="Anggota" />
 
             <div className="space-y-10 mt-5">
-                {/* Breadcrumbs */}
-                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
-                    <ul>
-                        <li>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        </li>
-                        <li>Anggota</li>
-                    </ul>
-                </div>
-                {/* End of Breadcrumbs */}
+                <Breadcrumbs data={MEMBER_BREADCRUMBS} />
 
                 <Card>
                     <div className="flex justify-end items-center">
@@ -89,6 +81,7 @@ const Member = ({ auth, members }) => {
                             Tambah
                         </Link>
                     </div>
+
                     <DataTable columns={columns} data={members} />
                 </Card>
             </div>

@@ -1,9 +1,10 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
+import { BOOK_SHOW_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import React from "react";
-import { GoChevronRight } from "react-icons/go";
-
+import { FaBookmark, FaShareAlt } from "react-icons/fa";
 const BookDetail = ({ auth, book }) => {
     console.log(book);
 
@@ -17,40 +18,15 @@ const BookDetail = ({ auth, book }) => {
     };
 
     return (
-        <Authenticated auth={auth}>
+        <Authenticated auth={auth} header="Detail Buku">
             <Head title={`Detail Buku ${book.title}`} />
-            <div className="space-y-10">
-                <h2 className="text-3xl font-semibold text-gray-700">
-                    Detail Buku
-                </h2>
-                <div className="flex justify-end items-center text-gray-700">
-                    <span>
-                        <Link
-                            href={route("dashboard")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Dashboard
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span>
-                        <Link
-                            href={route("book.index")}
-                            className="hover:text-blue-600 transition-colors duration-300"
-                        >
-                            Buku
-                        </Link>
-                    </span>
-                    <span>
-                        <GoChevronRight size={20} />
-                    </span>
-                    <span className="text-blue-600">Detail Buku</span>
-                </div>
+
+            <div className="space-y-10 mt-5">
+                <Breadcrumbs data={BOOK_SHOW_BREADCRUMBS} />
+
                 <Card>
                     <div className="grid grid-cols-1 auto-rows-auto gap-8 md:grid-rows-1 md:grid-cols-[1fr_2fr_1fr]">
-                        <div className="flex items-start justify-center relative">
+                        <div className="flex items-start justify-center">
                             {book.image ? (
                                 <img
                                     src={`/storage/${book.image}`}
@@ -168,11 +144,11 @@ const BookDetail = ({ auth, book }) => {
                                     <span className="block text-gray-700">
                                         Status
                                         {!!book.status ? (
-                                            <span className="block mt-1 w-fit rounded-md text-center px-2 py-1 text-xs text-white font-bold uppercase bg-green-600">
+                                            <span className="badge badge-success block text-xs tracking-wider text-bold text-white uppercase">
                                                 ACTIVE
                                             </span>
                                         ) : (
-                                            <span className="block mt-1 w-fit rounded-md text-center px-2 py-1 text-xs text-white font-bold uppercase bg-red-600">
+                                            <span className="badge badge-error block text-xs tracking-wider text-bold text-white uppercase">
                                                 INACTIVE
                                             </span>
                                         )}
@@ -181,30 +157,60 @@ const BookDetail = ({ auth, book }) => {
                             </div>
                             <div className="flex flex-col gap-2">
                                 {/* Button */}
-                                <Link
-                                    href={route("book.edit", book.id)}
-                                    role="button"
-                                    className="btn btn-warning btn-sm md:btn-md"
-                                >
-                                    Edit
-                                </Link>
-                                <button
-                                    className="btn btn-error btn-sm md:btn-md"
-                                    onClick={() =>
-                                        document
-                                            .getElementById("my_modal_2")
-                                            .showModal()
-                                    }
-                                >
-                                    Hapus
-                                </button>
+                                {auth.isAdmin ? (
+                                    <>
+                                        <Link
+                                            href={route("book.edit", book.id)}
+                                            role="button"
+                                            className="btn btn-warning btn-sm md:btn-md"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <button
+                                            className="btn btn-error btn-sm md:btn-md"
+                                            onClick={() =>
+                                                document
+                                                    .getElementById(
+                                                        "my_modal_2"
+                                                    )
+                                                    .showModal()
+                                            }
+                                        >
+                                            Hapus
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link
+                                            href={route("book.edit", book.id)}
+                                            role="button"
+                                            className="btn btn-success btn-sm md:btn-md"
+                                        >
+                                            <FaBookmark size={20} />
+                                            <span className="ms-1">Simpan</span>
+                                        </Link>
+                                        <button
+                                            className="btn btn-info btn-sm md:btn-md flex justify-center items-center"
+                                            onClick={() =>
+                                                document
+                                                    .getElementById(
+                                                        "my_modal_2"
+                                                    )
+                                                    .showModal()
+                                            }
+                                        >
+                                            <FaShareAlt size={20} />
+                                            <span className="ms-1">
+                                                Bagikan
+                                            </span>
+                                        </button>
+                                    </>
+                                )}
                             </div>
                             {/* Modal */}
                             <dialog id="my_modal_2" className="modal">
                                 <div className="modal-box">
-                                    <h3 className="font-bold text-lg">
-                                        Hello!
-                                    </h3>
+                                    <h3 className="font-bold text-lg">Hapus</h3>
                                     <form
                                         onSubmit={handleDelete}
                                         className="flex flex-col gap-2"

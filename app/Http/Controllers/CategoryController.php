@@ -38,7 +38,7 @@ class CategoryController extends Controller
 
         Category::create($data);
 
-        return Redirect::to(route("category.index"))->with("message", "Data kategori berhasil ditambah.");
+        return Redirect::to(route("category.index"))->with("success", "Kategori baru berhasil ditambah.");
     }
 
     /**
@@ -52,17 +52,27 @@ class CategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Category $category)
+    public function edit(Category $category, $id)
     {
-        //
+        $category = Category::find($id);
+
+        return inertia("Admin/CategoryEdit", [
+            "category" => $category
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category, $id)
     {
-        //
+        $data = $request->validate([
+            "name" => ["required", "regex:/^[a-zA-Z\s]+$/", "min:2", "max:50"],
+        ]);
+
+        Category::find($id)->update($data);
+
+        return Redirect::to(route("category.index"))->with("success", "Kategori baru berhasil diubah.");
     }
 
     /**

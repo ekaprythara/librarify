@@ -1,5 +1,7 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
 import DataTable from "@/Components/DataTable";
+import { CATEGORY_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, usePage } from "@inertiajs/react";
 import React, { useEffect } from "react";
@@ -9,8 +11,8 @@ const Category = ({ auth, categories }) => {
     const { flash } = usePage().props;
 
     useEffect(() => {
-        if (flash.message) {
-            toast.success(flash.message);
+        if (flash.success) {
+            toast.success(flash.success);
         }
     }, [flash]);
 
@@ -19,6 +21,23 @@ const Category = ({ auth, categories }) => {
             accessorKey: "name",
             header: "Nama",
         },
+        {
+            header: "Aksi",
+            cell: ({ row }) => {
+                const id = row.original.id;
+                return (
+                    <div className="flex justify-center items-center">
+                        <Link
+                            href={route("category.edit", id)}
+                            as="button"
+                            className="btn btn-warning"
+                        >
+                            Edit
+                        </Link>
+                    </div>
+                );
+            },
+        },
     ];
 
     return (
@@ -26,16 +45,7 @@ const Category = ({ auth, categories }) => {
             <Head title="Kategori" />
 
             <div className="space-y-10 mt-5">
-                {/* Breadcrumbs */}
-                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
-                    <ul>
-                        <li>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        </li>
-                        <li>Kategori</li>
-                    </ul>
-                </div>
-                {/* End of Breadcrumbs */}
+                <Breadcrumbs data={CATEGORY_BREADCRUMBS} />
 
                 <Card>
                     <div className="flex justify-end items-center">

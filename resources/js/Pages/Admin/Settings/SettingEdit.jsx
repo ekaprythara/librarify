@@ -1,5 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, Link, usePage } from "@inertiajs/react";
 import UpdateLimitation from "./Partials/UpdateLimitation";
 import Card from "@/Components/Card";
 import { useEffect } from "react";
@@ -9,8 +9,8 @@ export default function SettingEdit({ auth, limitation }) {
     const { flash } = usePage().props;
 
     useEffect(() => {
-        if (flash.message) {
-            toast.success(flash.message);
+        if (flash.success) {
+            toast.success(flash.success);
         }
     }, [flash]);
 
@@ -18,12 +18,20 @@ export default function SettingEdit({ auth, limitation }) {
         <AuthenticatedLayout auth={auth} header="Pengaturan">
             <Head title="Pengaturan" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                    <Card>
-                        <UpdateLimitation limitation={limitation} />
-                    </Card>
+            <div className="space-y-10 mt-5">
+                {/* Breadcrumbs */}
+                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
+                    <ul>
+                        <li>
+                            <Link href={route("dashboard")}>Dashboard</Link>
+                        </li>
+                        <li>Pengaturan</li>
+                    </ul>
                 </div>
+                {/* End of Breadcrumbs */}
+                <Card>
+                    <UpdateLimitation limitation={limitation} />
+                </Card>
             </div>
         </AuthenticatedLayout>
     );

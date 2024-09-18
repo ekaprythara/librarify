@@ -30,6 +30,6 @@ class SettingController extends Controller
         ]);
         Limitation::find(1)->update($data);
 
-        return Redirect::to(route("setting.edit"))->with("message", "Data berhasil diedit.");
+        return Redirect::to(route("setting.edit"))->with("success", "Pengaturan berhasil diperbarui.");
     }
 }

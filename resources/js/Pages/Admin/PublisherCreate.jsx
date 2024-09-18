@@ -1,6 +1,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import Card from "@/Components/Card";
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
+import { PUBLISHER_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
 
 export default function PublisherCreate({ auth }) {
     const { data, setData, post, errors } = useForm({
@@ -10,7 +12,6 @@ export default function PublisherCreate({ auth }) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log(data);
         post(route("publisher.store"));
     };
 
@@ -19,27 +20,23 @@ export default function PublisherCreate({ auth }) {
             <Head title="Penerbit" />
 
             <div className="space-y-10 mt-5">
-                {/* Breadcrumbs */}
-                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
-                    <ul>
-                        <li>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        </li>
-                        <li>
-                            <Link href={route("publisher.index")}>
-                                Penerbit
-                            </Link>
-                        </li>
-                        <li>Tambah Penerbit</li>
-                    </ul>
-                </div>
-                {/* End of Breadcrumbs */}
+                <Breadcrumbs data={PUBLISHER_CREATE_BREADCRUMBS} />
 
                 <Card>
-                    <div className="max-w-xl">
+                    <section className="max-w-xl">
+                        <header>
+                            <h3 className="text-lg font-medium text-gray-900">
+                                Tambah Penerbit
+                            </h3>
+
+                            <p className="mt-1 text-sm text-gray-600">
+                                Tambahkan pengarang untuk membantu dalam
+                                mengidentifikasi penerbit buku.
+                            </p>
+                        </header>
                         <form
                             onSubmit={handleSubmit}
-                            className="flex flex-col gap-2"
+                            className="flex flex-col mt-6 space-y-6"
                         >
                             <div className="flex flex-col gap-1">
                                 <label className="form-control w-full max-w-xl">
@@ -69,7 +66,7 @@ export default function PublisherCreate({ auth }) {
                                 Tambah
                             </button>
                         </form>
-                    </div>
+                    </section>
                 </Card>
             </div>
         </AuthenticatedLayout>

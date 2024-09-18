@@ -1,12 +1,12 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm, usePage } from "@inertiajs/react";
 import Card from "@/Components/Card";
-import { useRef } from "react";
-import { useEffect } from "react";
 import { Breadcrumbs } from "@/Components/Breadcrumbs";
-import { CATEGORY_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
+import { PUBLISHER_EDIT_BREADCRUMBS } from "@/constants/breadcrumbs";
+import { useEffect } from "react";
+import { useRef } from "react";
 
-export default function CategoryCreate({ auth }) {
+export default function PublisherEdit({ auth, publisher }) {
     const inputRef = useRef();
 
     useEffect(() => {
@@ -15,34 +15,34 @@ export default function CategoryCreate({ auth }) {
         }
     }, []);
 
-    const { data, setData, post, errors } = useForm({
-        name: "",
+    const { data, setData, patch, errors } = useForm({
+        name: publisher.name,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         console.log(data);
-        post(route("category.store"));
+        patch(route("publisher.update", publisher.id));
     };
 
     return (
-        <AuthenticatedLayout auth={auth} header="Tambah">
-            <Head title="Kategori" />
+        <AuthenticatedLayout auth={auth} header="Edit">
+            <Head title="Penerbit" />
 
             <div className="space-y-10 mt-5">
-                <Breadcrumbs data={CATEGORY_CREATE_BREADCRUMBS} />
+                <Breadcrumbs data={PUBLISHER_EDIT_BREADCRUMBS} />
 
                 <Card>
                     <section className="max-w-xl">
                         <header>
                             <h3 className="text-lg font-medium text-gray-900">
-                                Tambah Kategori
+                                Edit Penerbit
                             </h3>
 
                             <p className="mt-1 text-sm text-gray-600">
-                                Tambahkan kategori buku untuk memudahkan
-                                pengelompokan dan pencarian.
+                                Edit penerbit untuk membantu dalam
+                                mengidentifikasi penerbit buku
                             </p>
                         </header>
                         <form
@@ -60,7 +60,6 @@ export default function CategoryCreate({ auth }) {
                                         onChange={(e) =>
                                             setData("name", e.target.value)
                                         }
-                                        ref={inputRef}
                                         className="input input-sm md:input-md input-bordered w-full max-w-xl"
                                     />
                                 </label>

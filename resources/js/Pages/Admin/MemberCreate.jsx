@@ -1,4 +1,6 @@
+import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import Card from "@/Components/Card";
+import { MEMBER_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import React from "react";
@@ -22,7 +24,6 @@ const MemberCreate = ({ auth }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log(data);
         post(route("member.store"));
     };
 
@@ -48,19 +49,7 @@ const MemberCreate = ({ auth }) => {
             <Head title="Anggota" />
 
             <div className="space-y-10 mt-5">
-                {/* Breadcrumbs */}
-                <div className="breadcrumbs flex justify-end items-center text-sm text-gray-700">
-                    <ul>
-                        <li>
-                            <Link href={route("dashboard")}>Dashboard</Link>
-                        </li>
-                        <li>
-                            <Link href={route("member.index")}>Anggota</Link>
-                        </li>
-                        <li>Tambah Anggota</li>
-                    </ul>
-                </div>
-                {/* End of Breadcrumbs */}
+                <Breadcrumbs data={MEMBER_CREATE_BREADCRUMBS} />
 
                 <Card>
                     <div className="max-w-xl">

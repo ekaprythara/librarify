@@ -38,7 +38,7 @@ class AuthorController extends Controller
 
         Author::create($data);
 
-        return Redirect::to(route("author.index"))->with("message", "Data pengarang berhasil ditambah.");
+        return Redirect::to(route("author.index"))->with("success", "Data pengarang berhasil ditambah.");
     }
 
     /**
@@ -52,17 +52,27 @@ class AuthorController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Author $author)
+    public function edit(Author $author, $id)
     {
-        //
+        $author = Author::find($id);
+
+        return inertia("Admin/AuthorEdit", [
+            "author" => $author
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Author $author)
+    public function update(Request $request, Author $author, $id)
     {
-        //
+        $data = $request->validate([
+            "name" => ["required", "regex:/^[a-zA-Z\s]+$/", "min:2", "max:50"],
+        ]);
+
+        Author::find($id)->update($data);
+
+        return Redirect::to(route("author.index"))->with("success", "Data pengarang berhasil diubah.");
     }
 
     /**
