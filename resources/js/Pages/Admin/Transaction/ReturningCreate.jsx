@@ -1,6 +1,6 @@
 import Card from "@/Components/Card";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
-import { Head, Link, useForm } from "@inertiajs/react";
+import { Head, useForm } from "@inertiajs/react";
 import React, { useState } from "react";
 import { DataTableMinimal } from "@/Components/DataTableMinimal";
 import Checkbox from "@/Components/Checkbox";
@@ -8,10 +8,7 @@ import { useEffect } from "react";
 import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Breadcrumbs } from "@/Components/Breadcrumbs";
-import {
-    LOAN_CREATE_BREADCRUMBS,
-    RETURNING_CREATE_BREADCRUMBS,
-} from "@/constants/breadcrumbs";
+import { RETURNING_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
 
 const LoanCreate = ({ auth, loans, users }) => {
     const [selectedUser, setSelectedUser] = useState();
@@ -23,12 +20,9 @@ const LoanCreate = ({ auth, loans, users }) => {
         label: user.name,
     }));
 
-    // console.log(loans);
-
     useEffect(() => {
         const books = loans.filter((loan) => loan.user_id === selectedUser);
 
-        // console.log("Books: ", books);
         setSelectedBooks(books);
         setSelectedLoans([]);
     }, [selectedUser]);
@@ -160,6 +154,27 @@ const LoanCreate = ({ auth, loans, users }) => {
             accessorFn: (row) => row.due_date,
             header: "Jatuh Tempo",
         },
+        {
+            id: "lost-col",
+            header: ({ table }) => (
+                <div className="flex justify-center items-center">
+                    <Checkbox
+                        checked={table.getIsAllRowsSelected()}
+                        indeterminate={table.getIsSomeRowsSelected() ? 1 : 0}
+                        onChange={table.getToggleAllRowsSelectedHandler()}
+                    />
+                </div>
+            ),
+            cell: ({ row }) => (
+                <div className="flex justify-center items-center">
+                    <Checkbox
+                        checked={row.getIsSelected()}
+                        disabled={!row.getCanSelect()}
+                        onChange={row.getToggleSelectedHandler()}
+                    />
+                </div>
+            ),
+        },
     ];
 
     const { data, setData, post, errors, reset } = useForm({
@@ -169,7 +184,6 @@ const LoanCreate = ({ auth, loans, users }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log(data);
         post(route("returning.store"), {
             onSuccess: () => {
                 reset();

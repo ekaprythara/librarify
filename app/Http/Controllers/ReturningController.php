@@ -52,6 +52,8 @@ class ReturningController extends Controller
 
         $returnDate = Carbon::now();
 
+        dd($request->isLost);
+
         try {
             DB::beginTransaction();
 
