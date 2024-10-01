@@ -17,7 +17,7 @@ class ReturningController extends Controller
      */
     public function index()
     {
-        $returnings = Returning::with(["loans", "loans.books", "loans.users"])->get();
+        $returnings = Returning::with(["loans", "loans.books", "loans.users"])->latest()->get();
         return inertia("Admin/Transaction/Returning", [
             "returnings" => $returnings
         ]);
@@ -46,13 +46,16 @@ class ReturningController extends Controller
     {
         // Validate incoming request to ensure 'loan_id' is an array of integers
         $request->validate([
+            "user_id" => "required",
             "loan_id" => "required|array",
             "loan_id.*" => "required|integer",
+            "isLost" => "array",
+            "isLost.*" => "integer"
         ]);
 
         $returnDate = Carbon::now();
 
-        dd($request->isLost);
+        // dd($request->user_id);
 
         try {
             DB::beginTransaction();
@@ -61,13 +64,18 @@ class ReturningController extends Controller
                 $data = [
                     "loan_id" => $loanId,
                     "return_date" => $returnDate->format("Y-m-d"),
-                    "isLost" => false,
+                    "isLost" => in_array($loanId, $request->isLost ?? []),
                 ];
 
                 $_bookId = Loan::where("id", $loanId)->value("book_id");
-                Book::where("id", $_bookId)->increment("remaining_stock");
 
-                Loan::where("id", $loanId)->update(["status" => "dikembalikan"]);
+                if (in_array($loanId, $request->isLost ?? [])) {
+                    Loan::where("id", $loanId)->update(["status" => "hilang"]);
+                    Book::where("id", $_bookId)->decrement("stock");
+                } else {
+                    Loan::where("id", $loanId)->update(["status" => "dikembalikan"]);
+                    Book::where("id", $_bookId)->increment("remaining_stock");
+                }
 
                 Returning::create($data);
             }

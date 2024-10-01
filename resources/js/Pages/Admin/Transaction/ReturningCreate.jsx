@@ -14,22 +14,33 @@ const LoanCreate = ({ auth, loans, users }) => {
     const [selectedUser, setSelectedUser] = useState();
     const [selectedBooks, setSelectedBooks] = useState([]);
     const [selectedLoans, setSelectedLoans] = useState([]);
+    const [selectedLostLoans, setSelectedLostLoans] = useState([]); // State to track checked rows
 
     const formattedUsers = users.map((user) => ({
         value: user.id,
         label: user.name,
     }));
+    const { data, setData, post, errors, reset } = useForm({
+        user_id: "",
+        loan_id: [],
+        isLost: [],
+    });
 
     useEffect(() => {
         const books = loans.filter((loan) => loan.user_id === selectedUser);
 
         setSelectedBooks(books);
         setSelectedLoans([]);
+        setData("user_id", selectedUser); // For validation only
     }, [selectedUser]);
 
     useEffect(() => {
         setData("loan_id", selectedLoans);
     }, [selectedLoans]);
+
+    useEffect(() => {
+        setData("isLost", selectedLostLoans);
+    }, [selectedLostLoans]);
 
     const style = {
         control: (base, state) => ({
@@ -151,35 +162,48 @@ const LoanCreate = ({ auth, loans, users }) => {
             header: "Judul",
         },
         {
+            accessorFn: (row) => row.loan_date,
+            header: "Tanggal Pinjam",
+        },
+        {
             accessorFn: (row) => row.due_date,
             header: "Jatuh Tempo",
         },
         {
             id: "lost-col",
-            header: ({ table }) => (
-                <div className="flex justify-center items-center">
-                    <Checkbox
-                        checked={table.getIsAllRowsSelected()}
-                        indeterminate={table.getIsSomeRowsSelected() ? 1 : 0}
-                        onChange={table.getToggleAllRowsSelectedHandler()}
-                    />
-                </div>
-            ),
-            cell: ({ row }) => (
-                <div className="flex justify-center items-center">
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        disabled={!row.getCanSelect()}
-                        onChange={row.getToggleSelectedHandler()}
-                    />
-                </div>
-            ),
+            header: "Hilang",
+            cell: ({ row }) => {
+                return (
+                    <div className="flex justify-center items-center">
+                        <Checkbox
+                            checked={selectedLostLoans.includes(
+                                row.original.id
+                            )}
+                            disabled={!selectedLoans.includes(row.original.id)}
+                            onChange={() => {
+                                if (
+                                    selectedLostLoans.includes(row.original.id)
+                                ) {
+                                    // Remove the loan ID from the selectedLostLoans array
+                                    setSelectedLostLoans(
+                                        selectedLostLoans.filter(
+                                            (id) => id !== row.original.id
+                                        )
+                                    );
+                                } else {
+                                    // Add the loan ID to the selectedLostLoans array
+                                    setSelectedLostLoans([
+                                        ...selectedLostLoans,
+                                        row.original.id,
+                                    ]);
+                                }
+                            }}
+                        />
+                    </div>
+                );
+            },
         },
     ];
-
-    const { data, setData, post, errors, reset } = useForm({
-        loan_id: [],
-    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -217,7 +241,7 @@ const LoanCreate = ({ auth, loans, users }) => {
                                     placeholder="Pilih Anggota..."
                                 />
                             </label>
-                            {errors.user_id && (
+                            {!selectedUser && (
                                 <p className="text-sm text-red-600">
                                     {errors.user_id}
                                 </p>

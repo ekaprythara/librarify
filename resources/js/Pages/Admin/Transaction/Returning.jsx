@@ -49,6 +49,25 @@ const Returning = ({ auth, returnings }) => {
             accessorKey: "return_date",
             header: "Tanggal Kembali",
         },
+        {
+            accessorKey: "isLost",
+            header: "Status",
+            cell: ({ row }) => {
+                const isLost = row.original.isLost;
+
+                return (
+                    <div className="flex justify-center items-center">
+                        <span
+                            className={`badge text-xs tracking-wider text-bold text-white uppercase ${
+                                isLost === 1 ? "badge-error" : "badge-success"
+                            }`}
+                        >
+                            {isLost === 1 ? "Hilang" : "Dikembalikan"}
+                        </span>
+                    </div>
+                );
+            },
+        },
     ];
 
     return (

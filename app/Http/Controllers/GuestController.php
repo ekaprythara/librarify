@@ -13,7 +13,7 @@ class GuestController extends Controller
     public function index()
     {
         $newestGuestName = Guest::latest("created_at")->value("name");
-        return inertia("Welcome", [
+        return inertia("Auth/Login", [
             "newestGuestName" => $newestGuestName
         ]);
     }

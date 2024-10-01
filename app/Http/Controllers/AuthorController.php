@@ -33,7 +33,7 @@ class AuthorController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            "name" => ["required", "regex:/^[a-zA-Z\s]+$/", "min:2", "max:50"],
+            "name" => ["required", "regex:/^[a-zA-Z\s.]+$/", "min:2", "max:50"],
         ]);
 
         Author::create($data);
@@ -67,7 +67,7 @@ class AuthorController extends Controller
     public function update(Request $request, Author $author, $id)
     {
         $data = $request->validate([
-            "name" => ["required", "regex:/^[a-zA-Z\s]+$/", "min:2", "max:50"],
+            "name" => ["required", "regex:/^[a-zA-Z\s.]+$/", "min:2", "max:50"],
         ]);
 
         Author::find($id)->update($data);

@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::create([
-            "image" => "images/users/profile.jpg",
+            "image" => "images/users/profile.png",
             "username" => "ekapriyanthara",
             "password" => "password",
             "name" => "Eka Priyanthara",
@@ -91,6 +91,13 @@ class DatabaseSeeder extends Seeder
         Category::create([
             "name" => "Sains & Teknologi",
         ]);
+        Category::create([
+            "name" => "Bantuan Diri",
+        ]);
+        Category::create([
+            "name" => "Desain",
+        ]);
+
 
         Author::create([
             "name" => "Henry Manampiring",
@@ -98,12 +105,27 @@ class DatabaseSeeder extends Seeder
         Author::create([
             "name" => "Jonathan Black",
         ]);
+        Author::create([
+            "name" => "John C. Maxwell",
+        ]);
+        Author::create([
+            "name" => "Benny S. Gunawan",
+        ]);
+        Author::create([
+            "name" => "Juni Anton",
+        ]);
 
         Publisher::create([
             "name" => "Penerbit Buku Kompas",
         ]);
         Publisher::create([
             "name" => "Pustaka Alvabet",
+        ]);
+        Publisher::create([
+            "name" => "Bhuwana Ilmu Komputer",
+        ]);
+        Publisher::create([
+            "name" => "Gramedia Pustaka Utama",
         ]);
     }
 }

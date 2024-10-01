@@ -28,6 +28,6 @@ class Book extends Model
 
     public function loans()
     {
-        return $this->belongsToMany(Loan::class, "loan_detail");
+        return $this->hasMany(Loan::class, "book_id");
     }
 }

@@ -9,14 +9,18 @@ import Select from "react-select";
 import makeAnimated from "react-select/animated";
 import { Breadcrumbs } from "@/Components/Breadcrumbs";
 import { LOAN_CREATE_BREADCRUMBS } from "@/constants/breadcrumbs";
+import { BsFillInfoCircleFill } from "react-icons/bs";
 
-const LoanCreate = ({ auth, books, users }) => {
+const LoanCreate = ({ auth, books, users, loans }) => {
     const [selectedBooks, setSelectedBooks] = useState([]);
+    const [newBooks, setNewBooks] = useState([]);
 
     const formattedUsers = users.map((user) => ({
         value: user.id,
         label: user.name,
     }));
+
+    // console.log(books);
 
     const style = {
         control: (base, state) => ({
@@ -150,8 +154,25 @@ const LoanCreate = ({ auth, books, users }) => {
 
     const { data, setData, post, errors, reset } = useForm({
         book_id: [],
-        user_id: users[0].id,
+        user_id: "",
     });
+
+    const handleOnUserChange = (selectedOptions) => {
+        setData("user_id", selectedOptions.value);
+        const userId = selectedOptions.value;
+
+        // Get the IDs of books borrowed by the user
+        const borrowedBookIds = loans
+            .filter((loan) => loan.user_id === userId) // Filter loans for the selected user
+            .map((loan) => loan.book_id); // Get the book IDs
+
+        // Filter the complete book list to find books that the user has not borrowed
+        const booksNotLoanedByUser = books.filter(
+            (book) => !borrowedBookIds.includes(book.id) // Only include books not in borrowed list
+        );
+
+        setNewBooks(booksNotLoanedByUser);
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -182,12 +203,7 @@ const LoanCreate = ({ auth, books, users }) => {
                                 <Select
                                     options={formattedUsers}
                                     components={makeAnimated()}
-                                    onChange={(selectedOptions) =>
-                                        setData(
-                                            "user_id",
-                                            selectedOptions.value
-                                        )
-                                    }
+                                    onChange={handleOnUserChange}
                                     styles={style}
                                     placeholder="Pilih Anggota..."
                                 />
@@ -198,9 +214,13 @@ const LoanCreate = ({ auth, books, users }) => {
                                 </p>
                             )}
                         </div>
-
+                        <p className="flex items-center text-blue-500 gap-2">
+                            <BsFillInfoCircleFill size={20} />
+                            Buku yang sedang dipinjam dan stok kosong tidak akan
+                            terlihat.
+                        </p>
                         <DataTableMinimal
-                            data={books}
+                            data={newBooks}
                             columns={columns}
                             setSelected={setSelectedBooks}
                         />

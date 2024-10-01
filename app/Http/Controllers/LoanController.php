@@ -22,7 +22,7 @@ class LoanController extends Controller
      */
     public function index()
     {
-        $loans = Loan::with(["users", "books"])->get();
+        $loans = Loan::with(["users", "books"])->latest()->get();
         return inertia("Admin/Transaction/Loan", [
             "loans" => $loans,
         ]);
@@ -34,11 +34,13 @@ class LoanController extends Controller
     public function create()
     {
         // ->where("remaining_stock", ">", "0")
-        $books = Book::with('authors')->where("remaining_stock", ">", "0")->where("status", true)->get();
+        $loans = Loan::with(["users.loans.books"])->where("status", "dipinjam")->get();
+        $books = Book::with(['authors'])->where("remaining_stock", ">", "0")->where("status", true)->get();
         $users = User::where("role_id", "2")->get();
         return inertia("Admin/Transaction/LoanCreate", [
             "books" => $books,
-            "users" => $users
+            "users" => $users,
+            "loans" => $loans
         ]);
     }
 
@@ -49,6 +51,7 @@ class LoanController extends Controller
     {
         // Validate incoming request to ensure 'book_id' is an array of integers
         $request->validate([
+            "user_id" => "required|integer",
             "book_id" => "required|array",
             "book_id.*" => "required|integer",
         ]);

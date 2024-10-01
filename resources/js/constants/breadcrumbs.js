@@ -4,7 +4,7 @@ export const PROFILE_BREADCRUMBS = [
         label: "Dashboard",
     },
     {
-        label: "Edit",
+        label: "Profil",
     },
 ];
 

@@ -14,7 +14,7 @@ class BookSeeder extends Seeder
     public function run(): void
     {
         $book1 = Book::create([
-            "image" => "images/books/sejarah-dunia-yang-disembunyikan.jpg",
+            "image" => "images/books/sejarah_dunia_yang_disembunyikan.png",
             "isbn" => "9786029193671",
             "title" => "Sejarah Dunia yang Disembunyikan",
             "publisher_id" => 2,
@@ -27,14 +27,11 @@ class BookSeeder extends Seeder
             "status" => true,
         ]);
 
-        $categoryIds1 = [8];
-        $authorIds1 = [2];
-
-        $book1->categories()->sync($categoryIds1);
-        $book1->authors()->sync($authorIds1);
+        $book1->categories()->sync([8]);
+        $book1->authors()->sync([2]);
 
         $book2 = Book::create([
-            "image" => "images/books/filosofi-teras.jpeg",
+            "image" => "images/books/filosofi_teras.jpg",
             "isbn" => "9786233463034",
             "title" => "Filosofi Teras",
             "publisher_id" => 1,
@@ -47,10 +44,41 @@ class BookSeeder extends Seeder
             "status" => true,
         ]);
 
-        $categoryIds2 = [1];
-        $authorIds2 = [1];
+        $book2->categories()->sync([1]);
+        $book2->authors()->sync([1]);
 
-        $book2->categories()->sync($categoryIds2);
-        $book2->authors()->sync($authorIds2);
+        $book3 = Book::create([
+            "image" => "images/books/the_360_leader.jpg",
+            "isbn" => "9786230405891",
+            "title" => "The 360 Degree Leader",
+            "publisher_id" => 3,
+            "publish_year" => "2021",
+            "pages" => "420",
+            "language" => "Bahasa Indonesia",
+            "description" => "Anda tidak harus terjebak dalam keadaan maupun posisi Anda. Anda tidak harus menjadi CEO untuk dapat memimpin secara efektif. Anda pun dapat belajar memengaruhi melalui kepemimpinan Anda meskipun Anda merupakan bawahan langsung dari seseorang yang bukan seorang pemimpin yang baik. Apa rahasianya? Anda belajar untuk mengembangkan pengaruh Anda dari mana pun di organisasi Anda dengan menjadi seorang Pemimpin 360 Derajat. Anda belajar untuk memimpin ke atas, memimpin ke samping, memimpin ke bawah.",
+            "remaining_stock" => "1",
+            "stock" => "1",
+            "status" => true,
+        ]);
+
+        $book3->categories()->sync([11]);
+        $book3->authors()->sync([3]);
+
+        $book4 = Book::create([
+            "image" => "images/books/design_create_innovate_your_future.png",
+            "isbn" => "9786020673646",
+            "title" => "Design Create Innovate Your Future",
+            "publisher_id" => 4,
+            "publish_year" => "2024",
+            "pages" => "22",
+            "language" => "Bahasa Indonesia",
+            "description" => "Dunia telah bertransformasi. Perkembangan teknologi, kecerdasan buatan, pandemi COVID-19, hingga kondisi geopolitik memicu perubahan itu. Akibatnya, arah bisnis makin tidak menentu. Banyak pekerjaan diambil alih oleh teknologi. Pengetahuan dan skill yang kita kuasai saat ini bisa jadi tak relevan lagi beberapa tahun mendatang. Ketidakpastian makin mengusik. Masa depan kian tak bisa diprediksi. Dalam keadaan yang serba tidak pasti dan tidak diketahui, satu-satunya jalan untuk menjadi tangguh dan bijaksana adalah menciptakan masa depan kita sendiri. Design Create Innovate Your Future membantu Anda untuk memahami era ketidakpastian dan mampu melewatinya. Tidak hanya itu, Anda juga akan mampu mengubah krisis atau masalah-masalah yang kompleks menjadi solusi dan terobosan yang inovatif dan berdampak positif. Tidak hanya berisikan teori, buku ini juga memuat cara-cara praktis untuk survive and thrive. Jika saat ini Anda sedang berada dalam kebingungan dan ingin menciptakan masa depan sendiri, buku ini untuk Anda.",
+            "remaining_stock" => "4",
+            "stock" => "4",
+            "status" => true,
+        ]);
+
+        $book4->categories()->sync([12]);
+        $book4->authors()->sync([4, 5]);
     }
 }
