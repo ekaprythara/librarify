@@ -91,7 +91,7 @@ const DataTable = ({ columns, data }) => {
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <td
-                                            className="px-4 py-8 border text-sm"
+                                            className="px-4 py-8 border text-base"
                                             key={cell.id}
                                         >
                                             {flexRender(

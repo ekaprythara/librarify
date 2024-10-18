@@ -40,14 +40,14 @@ const Returning = ({ auth, returnings }) => {
             header: "Tanggal Pinjam",
         },
         {
+            accessorKey: "return_date",
+            header: "Tanggal Kembali",
+        },
+        {
             accessorFn: (row) => {
                 return row.loans.due_date;
             },
             header: "Jatuh Tempo",
-        },
-        {
-            accessorKey: "return_date",
-            header: "Tanggal Kembali",
         },
         {
             accessorKey: "fine",
@@ -64,14 +64,19 @@ const Returning = ({ auth, returnings }) => {
         },
         {
             accessorKey: "isPaid",
-            header: "Dibayar",
+            header: "Status",
             cell: ({ row }) => {
                 const isPaid = row.original.isPaid;
+                const isLost = row.original.isLost;
 
                 return (
                     <div className="flex justify-center items-center">
                         <span className="text-center">
-                            {isPaid ? "LUNAS" : "BELUM LUNAS"}
+                            {isLost
+                                ? "HILANG"
+                                : isPaid
+                                ? "LUNAS"
+                                : "BELUM LUNAS"}
                         </span>
                     </div>
                 );
@@ -81,6 +86,7 @@ const Returning = ({ auth, returnings }) => {
             header: "Aksi",
             cell: ({ row }) => {
                 const isPaid = row.original.isPaid;
+                const isLost = row.original.isLost;
 
                 const returnDate = new Date(row.original.return_date);
                 const dueDate = new Date(row.original.loans.due_date);
@@ -107,7 +113,91 @@ const Returning = ({ auth, returnings }) => {
 
                 return (
                     <>
-                        {isPaid ? (
+                        {isLost ? (
+                            <>
+                                <button
+                                    className="btn btn-error btn-md"
+                                    onClick={() =>
+                                        document
+                                            .getElementById(
+                                                `payTheFine${row.original.id}`
+                                            )
+                                            .showModal()
+                                    }
+                                >
+                                    Ganti
+                                </button>
+
+                                <dialog
+                                    id={`payTheFine${row.original.id}`}
+                                    className="modal"
+                                >
+                                    <div className="modal-box max-w-3xl">
+                                        <form method="dialog">
+                                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+                                                ✕
+                                            </button>
+                                        </form>
+                                        <h3 className="font-bold text-lg">
+                                            Rincian Denda
+                                        </h3>
+                                        <form
+                                            onSubmit={handleSubmit}
+                                            className="pt-4"
+                                        >
+                                            <div className="overflow-x-auto">
+                                                <table className="table">
+                                                    {/* head */}
+                                                    <thead>
+                                                        <tr>
+                                                            <th>
+                                                                Tanggal Kembali
+                                                            </th>
+                                                            <th>Jatuh Tempo</th>
+                                                            <th>Selisih</th>
+                                                            <th>
+                                                                Denda per Hari
+                                                            </th>
+                                                            <th>Total Denda</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                {
+                                                                    row.original
+                                                                        .return_date
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {
+                                                                    row.original
+                                                                        .loans
+                                                                        .due_date
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                {`${differenceInDays} hari`}
+                                                            </td>
+                                                            <td>2000</td>
+                                                            <td>
+                                                                {`Rp. ${row.original.fine}`}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <div className="flex justify-end items-center mt-4">
+                                                <button className="btn btn-primary btn-md">
+                                                    Ganti
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </dialog>
+                            </>
+                        ) : isPaid ? (
                             <button className="btn btn-error btn-disabled btn-md">
                                 Bayar
                             </button>

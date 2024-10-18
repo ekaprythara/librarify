@@ -98,6 +98,7 @@ const LoanCreate = ({ auth, books, users, loans }) => {
                         checked={table.getIsAllRowsSelected()}
                         indeterminate={table.getIsSomeRowsSelected() ? 1 : 0}
                         onChange={table.getToggleAllRowsSelectedHandler()}
+                        className="checkbox checkbox-primary"
                     />
                 </div>
             ),
@@ -107,6 +108,7 @@ const LoanCreate = ({ auth, books, users, loans }) => {
                         checked={row.getIsSelected()}
                         disabled={!row.getCanSelect()}
                         onChange={row.getToggleSelectedHandler()}
+                        className="checkbox checkbox-primary"
                     />
                 </div>
             ),
