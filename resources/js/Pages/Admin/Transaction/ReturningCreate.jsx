@@ -20,6 +20,7 @@ const LoanCreate = ({ auth, loans, users }) => {
         value: user.id,
         label: user.name,
     }));
+
     const { data, setData, post, errors, reset } = useForm({
         user_id: "",
         loan_id: [],
@@ -114,6 +115,7 @@ const LoanCreate = ({ auth, loans, users }) => {
                         checked={table.getIsAllRowsSelected()}
                         indeterminate={table.getIsSomeRowsSelected() ? 1 : 0}
                         onChange={table.getToggleAllRowsSelectedHandler()}
+                        className="checkbox checkbox-primary"
                     />
                 </div>
             ),
@@ -123,6 +125,7 @@ const LoanCreate = ({ auth, loans, users }) => {
                         checked={row.getIsSelected()}
                         disabled={!row.getCanSelect()}
                         onChange={row.getToggleSelectedHandler()}
+                        className="checkbox checkbox-primary"
                     />
                 </div>
             ),
@@ -158,7 +161,8 @@ const LoanCreate = ({ auth, loans, users }) => {
             header: "ISBN",
         },
         {
-            accessorFn: (row) => row.books.title,
+            accessorFn: (row) =>
+                `${row.books.title} (${row.books.publish_year})`,
             header: "Judul",
         },
         {
@@ -176,6 +180,7 @@ const LoanCreate = ({ auth, loans, users }) => {
                 return (
                     <div className="flex justify-center items-center">
                         <Checkbox
+                            className="checkbox checkbox-primary"
                             checked={selectedLostLoans.includes(
                                 row.original.id
                             )}

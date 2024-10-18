@@ -4,6 +4,7 @@ import UpdateLimitation from "./Partials/UpdateLimitation";
 import Card from "@/Components/Card";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
+import UpdateFine from "./Partials/UpdateFine";
 
 export default function SettingEdit({ auth, limitation }) {
     const { flash } = usePage().props;
@@ -31,6 +32,9 @@ export default function SettingEdit({ auth, limitation }) {
                 {/* End of Breadcrumbs */}
                 <Card>
                     <UpdateLimitation limitation={limitation} />
+                </Card>
+                <Card>
+                    <UpdateFine />
                 </Card>
             </div>
         </AuthenticatedLayout>

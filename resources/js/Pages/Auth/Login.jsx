@@ -58,12 +58,12 @@ export default function Login({ status }) {
                 )}
                 <div className="p-10 rounded-lg shadow-lg bg-[#FCF8F3] w-full max-w-lg">
                     <header>
-                        <h3 className="text-2xl font-medium text-gray-900">
+                        <h3 className="text-xl font-medium text-gray-900">
                             Login
                         </h3>
 
-                        <p className="mt-1 text-lg text-gray-600">
-                            Welcome back, please login to your account.
+                        <p className="mt-1 text-base text-gray-600">
+                            Welcome back, please login to your account
                         </p>
                     </header>
                     <form onSubmit={handleSubmit} className="space-y-2 mt-5">
@@ -127,9 +127,9 @@ export default function Login({ status }) {
 
                         <button
                             type="submit"
-                            className="btn btn-primary w-full"
+                            className="btn btn-primary w-full text-base"
                         >
-                            Masuk
+                            Login
                         </button>
                     </form>
                 </div>

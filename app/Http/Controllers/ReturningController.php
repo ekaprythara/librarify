@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\Return_;
 
 class ReturningController extends Controller
 {
@@ -55,15 +56,20 @@ class ReturningController extends Controller
 
         $returnDate = Carbon::now();
 
-        // dd($request->user_id);
-
         try {
             DB::beginTransaction();
 
             foreach ($request->loan_id as $loanId) {
+                $dueDate = Loan::find($loanId)->value("due_date");
+
+                // Calculate the fine only if the return date is after the due date
+                $fine = ($returnDate > $dueDate) ? $returnDate->diffInDays($dueDate) * 2000 : 0;
+
                 $data = [
                     "loan_id" => $loanId,
                     "return_date" => $returnDate->format("Y-m-d"),
+                    "fine" => $fine,
+                    "isPaid" => $fine === 0,
                     "isLost" => in_array($loanId, $request->isLost ?? []),
                 ];
 
@@ -110,9 +116,16 @@ class ReturningController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Returning $returning)
+    public function update(Request $request, Returning $returning, $id)
     {
-        //
+        $data = $request->validate([
+            "isPaid" => "boolean"
+        ]);
+
+        Returning::where("id", $id)->update($data);
+
+        return redirect("/pengembalian")
+            ->with("success", "Berhasil melunasi denda.");
     }
 
     /**

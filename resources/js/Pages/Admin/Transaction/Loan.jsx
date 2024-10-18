@@ -22,15 +22,15 @@ const Loan = ({ auth, loans }) => {
     const columns = [
         {
             accessorFn: (row) => {
-                return row.users.name;
-            },
-            header: "Nama Anggota",
-        },
-        {
-            accessorFn: (row) => {
                 return row.books.title;
             },
             header: "Nama Buku",
+        },
+        {
+            accessorFn: (row) => {
+                return row.users.name;
+            },
+            header: "Nama Anggota",
         },
         {
             accessorKey: "loan_date",

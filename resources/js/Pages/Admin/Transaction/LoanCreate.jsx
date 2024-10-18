@@ -143,12 +143,20 @@ const LoanCreate = ({ auth, books, users, loans }) => {
         {
             accessorKey: "title",
             header: "Judul",
+            cell: ({ row }) =>
+                `${row.original.title} (${row.original.publish_year})`,
         },
         {
             accessorFn: (row) => {
                 return row.authors.map((author) => author.name).join(", ");
             },
             header: "Penulis",
+        },
+        {
+            accessorFn: (row) => {
+                return row.publishers.name;
+            },
+            header: "Penerbit",
         },
     ];
 
@@ -214,11 +222,13 @@ const LoanCreate = ({ auth, books, users, loans }) => {
                                 </p>
                             )}
                         </div>
+
                         <p className="flex items-center text-blue-500 gap-2">
                             <BsFillInfoCircleFill size={20} />
                             Buku yang sedang dipinjam dan stok kosong tidak akan
                             terlihat.
                         </p>
+
                         <DataTableMinimal
                             data={newBooks}
                             columns={columns}

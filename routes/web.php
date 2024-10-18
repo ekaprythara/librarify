@@ -40,7 +40,6 @@ Route::get("/cari-buku", [SearchBookController::class, "index"])->name("search-b
 
 Route::get("/buku", [BookController::class, "index"])->name("book.index");
 
-
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -93,6 +92,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get("/pengembalian", [ReturningController::class, "index"])->name("returning.index");
     Route::get("/pengembalian/create", [ReturningController::class, "create"])->name("returning.create");
     Route::post("/pengembalian/create", [ReturningController::class, "store"])->name("returning.store");
+    Route::patch("/pengembalian/{id}/edit", [ReturningController::class, "update"])->name("returning.update");
 });
 
 Route::get("/buku/{id}", [BookController::class, "show"])->name("book.show");

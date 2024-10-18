@@ -35,7 +35,7 @@ class LoanController extends Controller
     {
         // ->where("remaining_stock", ">", "0")
         $loans = Loan::with(["users.loans.books"])->where("status", "dipinjam")->get();
-        $books = Book::with(['authors'])->where("remaining_stock", ">", "0")->where("status", true)->get();
+        $books = Book::with(["authors", "publishers"])->where("remaining_stock", ">", "0")->where("status", true)->get();
         $users = User::where("role_id", "2")->get();
         return inertia("Admin/Transaction/LoanCreate", [
             "books" => $books,
