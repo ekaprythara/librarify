@@ -70,35 +70,17 @@ const Returning = ({ auth, returnings }) => {
 
                 return (
                     <div className="flex justify-center items-center">
-                        <span>{isPaid ? "LUNAS" : "BELUM LUNAS"}</span>
+                        <span className="text-center">
+                            {isPaid ? "LUNAS" : "BELUM LUNAS"}
+                        </span>
                     </div>
                 );
             },
         },
-        // {
-        //     accessorKey: "isLost",
-        //     header: "Status",
-        //     cell: ({ row }) => {
-        //         const isLost = row.original.isLost;
-
-        //         return (
-        //             <div className="flex justify-center items-center">
-        //                 <span
-        //                     className={`badge text-xs tracking-wider text-bold text-white uppercase ${
-        //                         isLost === 1 ? "badge-error" : "badge-success"
-        //                     }`}
-        //                 >
-        //                     {isLost === 1 ? "Hilang" : "Dikembalikan"}
-        //                 </span>
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             header: "Aksi",
             cell: ({ row }) => {
                 const isPaid = row.original.isPaid;
-                console.log(row.original);
 
                 const returnDate = new Date(row.original.return_date);
                 const dueDate = new Date(row.original.loans.due_date);
@@ -115,7 +97,7 @@ const Returning = ({ auth, returnings }) => {
 
                 const handleSubmit = (e) => {
                     e.preventDefault();
-                    console.log(data);
+
                     patch(route("returning.update", row.original.id), {
                         onSuccess: () => {
                             reset();
@@ -143,6 +125,7 @@ const Returning = ({ auth, returnings }) => {
                                 >
                                     Bayar
                                 </button>
+
                                 <dialog
                                     id={`payTheFine${row.original.id}`}
                                     className="modal"
@@ -173,7 +156,7 @@ const Returning = ({ auth, returnings }) => {
                                                             <th>
                                                                 Denda per Hari
                                                             </th>
-                                                            <th>Denda</th>
+                                                            <th>Total Denda</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>

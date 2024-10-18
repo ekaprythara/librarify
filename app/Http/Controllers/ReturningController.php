@@ -60,7 +60,7 @@ class ReturningController extends Controller
             DB::beginTransaction();
 
             foreach ($request->loan_id as $loanId) {
-                $dueDate = Loan::find($loanId)->value("due_date");
+                $dueDate = Loan::find($loanId)->due_date;
 
                 // Calculate the fine only if the return date is after the due date
                 $fine = ($returnDate > $dueDate) ? $returnDate->diffInDays($dueDate) * 2000 : 0;
